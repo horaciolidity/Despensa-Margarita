@@ -14,12 +14,14 @@
             
         </div>
 
-        <section id="product-form">
-            <input type="text" id="product-code" placeholder="Código de Barras">
-            <input type="text" id="product-name" placeholder="Nombre del Producto">
-            <input type="number" id="product-price" placeholder="Precio">
-            <button onclick="addProduct()">Agregar Producto</button>
-        </section>
+       <section id="product-form">
+    <input type="text" id="product-code" placeholder="Código de Barras">
+    <input type="text" id="product-name" placeholder="Nombre del Producto">
+    <input type="number" id="product-price" placeholder="Precio">
+    <input type="number" id="product-quantity" placeholder="Cantidad" min="1"> <!-- Campo de cantidad -->
+    <button onclick="addProduct()">Agregar Producto</button>
+</section>
+
 
         <section id="product-search">
             <input type="text" id="search-code" placeholder="Buscar por Código">
