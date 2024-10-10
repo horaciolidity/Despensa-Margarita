@@ -14,7 +14,6 @@ h1 {
     font-weight: bold; /* Hacer el texto más audaz */
     margin: 20px 0; /* Espaciado vertical */
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Sombra para dar profundidad */
-    background-color: #34495e; /* Color de fondo opcional */
     padding: 15px; /* Espaciado interno */
     border-radius: 10px; /* Bordes redondeados */
 }
