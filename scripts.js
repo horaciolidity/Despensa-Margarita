@@ -11,21 +11,33 @@ function saveProducts(products) {
     localStorage.setItem('products', JSON.stringify(products));
 }
 
+// Modifica la función addProduct para incluir cantidad
 function addProduct() {
     const code = document.getElementById('product-code').value.trim();
     const name = document.getElementById('product-name').value.trim();
     const price = document.getElementById('product-price').value.trim();
+    const quantity = parseInt(document.getElementById('product-quantity').value.trim()); // Agregar cantidad
 
-    if (code && name && price) {
+    if (code && name && price && quantity > 0) {
         const products = getProducts();
-        products.push({ code, name, price: parseFloat(price) });
+        const existingProductIndex = products.findIndex(p => p.code === code);
+
+        if (existingProductIndex !== -1) {
+            // Si el producto ya existe, solo actualizamos la cantidad
+            products[existingProductIndex].quantity += quantity;
+        } else {
+            // Si es un producto nuevo, lo añadimos
+            products.push({ code, name, price: parseFloat(price), quantity });
+        }
+
         saveProducts(products);
         displayProducts();
         clearForm();
     } else {
-        alert('Por favor, complete todos los campos');
+        alert('Por favor, complete todos los campos correctamente');
     }
 }
+
 
 function clearForm() {
     document.getElementById('product-code').value = '';
@@ -53,6 +65,7 @@ function searchProduct() {
     }
 }
 
+// Modifica la función displayProducts para mostrar la cantidad
 function displayProducts() {
     const products = getProducts();
     const productsList = document.getElementById('products');
@@ -61,7 +74,7 @@ function displayProducts() {
     products.forEach(product => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <span>${product.code} - ${product.name} - $${product.price.toFixed(2)}</span>
+            <span>${product.code} - ${product.name} - $${product.price.toFixed(2)} - Cantidad: ${product.quantity}</span>
             <button onclick="deleteProduct('${product.code}')">Eliminar</button>
             <button onclick="editProduct('${product.code}')">Editar</button>
         `;
@@ -88,20 +101,30 @@ function editProduct(code) {
     }
 }
 
+// Modifica el evento para añadir productos al carrito
 function scanProduct() {
     const code = document.getElementById('scan-code').value.trim();
     const products = getProducts();
     const product = products.find(p => p.code === code);
 
     if (product) {
-        addToCart(product);
-        updateTotalPrice();
-        document.getElementById('scan-code').value = '';
+        if (product.quantity > 0) {
+            addToCart(product);
+            product.quantity--;
+            saveProducts(products); // Actualiza el inventario después de añadir al carrito
+            updateTotalPrice();
+            document.getElementById('scan-code').value = '';
+            checkStock(product);
+        } else {
+            alert('No hay suficiente stock de este producto.');
+        }
     } else {
         alert('Producto no encontrado');
     }
 }
 
+
+// Modifica la función que muestra el carrito para que incluya la lógica de venta
 function addToCart(product) {
     const cartList = document.getElementById('cart');
     const li = document.createElement('li');
@@ -206,4 +229,30 @@ function downloadProducts() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+}
+// Función para manejar la venta de un producto
+function sellProduct() {
+    const code = document.getElementById('scan-code').value.trim();
+    const products = getProducts();
+    const product = products.find(p => p.code === code);
+
+    if (product) {
+        if (product.quantity > 0) {
+            product.quantity--;
+            saveProducts(products);
+            updateTotalPrice();
+            checkStock(product);
+            document.getElementById('scan-code').value = '';
+        } else {
+            alert('No hay suficiente stock de este producto.');
+        }
+    } else {
+        alert('Producto no encontrado');
+    }
+}
+// Función para comprobar el stock y mostrar alertas
+function checkStock(product) {
+    if (product.quantity <= 5) { // Alerta cuando hay 5 o menos
+        alert(`¡Alerta! El producto ${product.name} está por acabarse.`);
+    }
 }
