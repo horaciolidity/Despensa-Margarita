@@ -38,10 +38,19 @@ section {
     margin-bottom: 20px;
 }
 
+/* Contenedor para organizar mejor los inputs */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Separación entre los inputs */
+    max-width: 400px;
+    margin: 0 auto; /* Centrado en la página */
+}
+
 input[type="text"], input[type="number"] {
     flex: 1;
     padding: 10px;
-    margin: 5px 0;
+    margin: 0; /* Eliminamos el margen adicional */
     border: 1px solid #bdc3c7;
     border-radius: 5px;
     font-size: 1em;
