@@ -16,7 +16,7 @@ h1, h2 {
     max-width: 900px;
     margin: 20px auto;
     padding: 20px;
-    background: rgba(52, 73, 94, 0.8); /* Fondo semitransparente */
+    background: transparent; /* Fondo totalmente transparente */
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     animation: fadeIn 1s ease-in-out;
