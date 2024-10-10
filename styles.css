@@ -9,19 +9,38 @@ body {
 
 h1 {
     text-align: center;
-    color: #ecf0f1; /* Color del texto */
-    font-size: 2.5em; /* Tamaño de fuente más grande */
-    font-weight: bold; /* Hacer el texto más audaz */
-    margin: 20px 0; /* Espaciado vertical */
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Sombra para dar profundidad */
-    padding: 15px; /* Espaciado interno */
-    border-radius: 10px; /* Bordes redondeados */
+    color: transparent; /* Color del texto transparente para el efecto de gradiente */
+    background: linear-gradient(45deg, #3498db, #8e44ad); /* Gradiente */
+    -webkit-background-clip: text; /* Clipa el fondo al texto */
+    background-clip: text; /* Clipa el fondo al texto */
+    font-size: 2.5em; 
+    font-weight: bold; 
+    margin: 20px 0; 
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); 
+    padding: 15px; 
+    border-radius: 10px; 
+    animation: fadeIn 1s ease-in-out; /* Animación */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0; 
+        transform: translateY(-20px); 
+    }
+    to {
+        opacity: 1; 
+        transform: translateY(0); 
+    }
 }
 
 h2 {
     text-align: center;
-    color: #ecf0f1;
+    color: #ecf0f1; 
+    font-size: 1.5em; 
+    margin: 15px 0; 
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); 
 }
+
 
 
 .container {
