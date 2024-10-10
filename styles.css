@@ -7,10 +7,23 @@ body {
     padding: 0;
 }
 
-h1, h2 {
+h1 {
+    text-align: center;
+    color: #ecf0f1; /* Color del texto */
+    font-size: 2.5em; /* Tamaño de fuente más grande */
+    font-weight: bold; /* Hacer el texto más audaz */
+    margin: 20px 0; /* Espaciado vertical */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Sombra para dar profundidad */
+    background-color: #34495e; /* Color de fondo opcional */
+    padding: 15px; /* Espaciado interno */
+    border-radius: 10px; /* Bordes redondeados */
+}
+
+h2 {
     text-align: center;
     color: #ecf0f1;
 }
+
 
 .container {
     max-width: 900px;
