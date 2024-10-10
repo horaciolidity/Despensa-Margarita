@@ -16,12 +16,14 @@ h1, h2 {
     max-width: 900px;
     margin: 20px auto;
     padding: 20px;
-    background: #34495e;
+    background: rgba(52, 73, 94, 0.8); /* Fondo semitransparente */
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     animation: fadeIn 1s ease-in-out;
-    z-index: -1;
+    position: relative; /* Permite que los elementos dentro se manejen con z-index */
+    z-index: 1; /* Asegura que esté por encima de la imagen */
 }
+
 
 section {
     margin-bottom: 30px;
