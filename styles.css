@@ -41,7 +41,7 @@ section {
 input[type="text"], input[type="number"] {
     flex: 1;
     padding: 10px;
-    margin: 5px 0; /* Mantener un margen superior e inferior */
+    margin: 0 5px; /* Agrega margen lateral de 5px */
     border: 1px solid #bdc3c7;
     border-radius: 5px;
     font-size: 1em;
@@ -54,6 +54,7 @@ input[type="text"]:focus, input[type="number"]:focus {
     border-color: #007bff;
     outline: none;
 }
+
 
 
 
