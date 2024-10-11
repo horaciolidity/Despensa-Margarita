@@ -296,15 +296,16 @@ function parseProducts(contents) {
     const lines = contents.split('\n');
     const products = lines.map(line => {
         const parts = line.split(',');
-        if (parts.length !== 3) {
-            console.error('Invalid product format:', line);
+        if (parts.length !== 4) { // Ahora esperamos 4 partes: código, nombre, precio y cantidad
+            console.error('Formato de producto inválido:', line);
             return null; // Omitir líneas mal formateadas
         }
-        const [code, name, price] = parts;
+        const [code, name, price, quantity] = parts;
         return {
             code: code.trim(),
             name: name.trim(),
-            price: parseFloat(price.trim())
+            price: parseFloat(price.trim()),
+            quantity: parseInt(quantity.trim()) // Procesar la cantidad
         };
     }).filter(product => product !== null); // Filtrar productos nulos
     return products;
@@ -323,7 +324,7 @@ function loadProducts() {
 
 function downloadProducts() {
     const products = getProducts();
-    const contents = products.map(p => `${p.code}, ${p.name}, ${p.price}`).join('\n');
+    const contents = products.map(p => `${p.code}, ${p.name}, ${p.price}, ${p.quantity}`).join('\n');
     const blob = new Blob([contents], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -333,6 +334,7 @@ function downloadProducts() {
     a.click();
     document.body.removeChild(a);
 }
+
 
 // Función para verificar el stock y mostrar alertas
 function checkStock(product) {
