@@ -344,7 +344,10 @@ function checkStock(product) {
 }
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
-        document.getElementById('loading-screen').style.display = 'none';
-    }, 4000); // Desaparece después de 2 segundos (2000 ms)
+        const loadingScreen = document.getElementById('loading-screen');
+        loadingScreen.classList.add('hidden'); // Añade la clase para iniciar la transición
+        setTimeout(() => {
+            loadingScreen.style.display = 'none'; // Oculta completamente después de la transición
+        }, 500); // Tiempo de la transición (0.5 segundos)
+    }, 2000); // Desaparece después de 2 segundos
 });
-
