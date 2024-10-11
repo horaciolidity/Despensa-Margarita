@@ -67,7 +67,6 @@ function searchProduct() {
     }
 }
 
-// Función para mostrar los productos
 function displayProducts() {
     const products = getProducts();
     const productsList = document.getElementById('products');
@@ -79,10 +78,30 @@ function displayProducts() {
             <span>${product.code} - ${product.name} - $${product.price.toFixed(2)} - Cantidad: ${product.quantity}</span>
             <button onclick="deleteProduct('${product.code}')">Eliminar</button>
             <button onclick="editProduct('${product.code}')">Editar</button>
+            <button onclick="updateProduct('${product.code}')">Actualizar</button> <!-- Botón de actualizar -->
         `;
         productsList.appendChild(li);
     });
 }
+
+// Nueva función para actualizar el producto
+function updateProduct(code) {
+    const products = getProducts();
+    const product = products.find(p => p.code === code);
+    const newQuantity = prompt('Ingrese la nueva cantidad para el producto:', product.quantity);
+    if (newQuantity !== null) {
+        const quantityNumber = parseInt(newQuantity);
+        if (quantityNumber >= 0) {
+            product.quantity = quantityNumber; // Actualiza la cantidad del producto
+            saveProducts(products); // Guarda el inventario actualizado
+            displayProducts(); // Actualiza la vista de productos
+            alert(`Cantidad de ${product.name} actualizada a ${quantityNumber}.`);
+        } else {
+            alert('Por favor, ingrese una cantidad válida.');
+        }
+    }
+}
+
 
 
 function deleteProduct(code) {
@@ -186,14 +205,17 @@ function checkout() {
     const quantitiesToDeduct = {};
 
     // Verificamos la cantidad a vender
+    let hasStockIssue = false; // Variable para verificar problemas de stock
+
     cartItems.forEach(item => {
-        const productCode = item.textContent.split('-')[0].trim();
+        const productCode = item.dataset.code; // Obtener el código del producto del atributo data
         const quantity = parseInt(item.querySelector('.quantity').textContent);
 
         const product = products.find(p => p.code === productCode);
         if (product) {
             if (product.quantity < quantity) {
                 alert(`No hay suficiente stock de ${product.name}. Solo quedan ${product.quantity} unidades.`);
+                hasStockIssue = true; // Marcar que hubo un problema de stock
                 return; // Salimos de la función si no hay suficiente stock
             }
             // Almacenamos la cantidad a deducir
@@ -202,7 +224,7 @@ function checkout() {
     });
 
     // Si hay un problema con el stock, no procedemos
-    if (Object.keys(quantitiesToDeduct).length === 0) {
+    if (hasStockIssue) {
         return;
     }
 
@@ -221,6 +243,7 @@ function checkout() {
     document.getElementById('total-price').textContent = '0.00';
     alert('Compra finalizada. El inventario ha sido actualizado.');
 }
+
 
 
 function consultarTotalVendido() {
