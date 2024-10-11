@@ -342,3 +342,9 @@ function checkStock(product) {
         alert(`Quedan solo ${product.quantity} unidades de ${product.name}.`);
     }
 }
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        document.getElementById('loading-screen').style.display = 'none';
+    }, 2000); // Desaparece después de 2 segundos (2000 ms)
+});
+
