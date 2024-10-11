@@ -173,7 +173,6 @@ function updateTotalPrice() {
     document.getElementById('total-price').textContent = total.toFixed(2);
 }
 
-// Función para finalizar la compra
 function checkout() {
     const total = parseFloat(document.getElementById('total-price').textContent);
     let totalVendido = parseFloat(localStorage.getItem('totalVendido')) || 0;
@@ -183,12 +182,33 @@ function checkout() {
     const cartItems = document.querySelectorAll('#cart li');
     const products = getProducts();
 
+    // Creamos un objeto para almacenar la cantidad total a restar por producto
+    const quantitiesToDeduct = {};
+
     cartItems.forEach(item => {
-        const productCode = item.dataset.code; // Usar el dataset para obtener el código
+        const productCode = item.textContent.split('-')[0].trim();
         const quantity = parseInt(item.querySelector('.quantity').textContent);
 
-        // Buscar el producto en el inventario y restar la cantidad
+        // Comprobar si la cantidad vendida excede la cantidad disponible
         const product = products.find(p => p.code === productCode);
+        if (product) {
+            if (product.quantity < quantity) {
+                alert(`No hay suficiente stock de ${product.name}. Solo quedan ${product.quantity} unidades.`);
+                return; // Salimos de la función si no hay suficiente stock
+            }
+            // Si hay suficiente stock, almacenamos la cantidad a deducir
+            quantitiesToDeduct[productCode] = quantity;
+        }
+    });
+
+    // Si hemos salido de la función debido a un stock insuficiente, no procedemos con la venta
+    if (Object.keys(quantitiesToDeduct).length === 0) {
+        return;
+    }
+
+    // Actualizamos el inventario
+    Object.entries(quantitiesToDeduct).forEach(([code, quantity]) => {
+        const product = products.find(p => p.code === code);
         if (product) {
             product.quantity -= quantity; // Restar la cantidad vendida
         }
@@ -199,6 +219,7 @@ function checkout() {
     document.getElementById('total-price').textContent = '0.00';
     alert('Compra finalizada');
 }
+
 
 
 function consultarTotalVendido() {
