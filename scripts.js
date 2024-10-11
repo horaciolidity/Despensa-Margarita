@@ -163,8 +163,26 @@ function addToCart(product) {
         li.innerHTML = ` 
             <span>${product.code} - ${product.name} - $${product.price.toFixed(2)} - Cantidad: <span class="quantity">1</span></span>
             <button onclick="addQuantity('${product.code}')">+</button> <!-- Botón para añadir más -->
+            <button onclick="removeQuantity('${product.code}')">-</button> <!-- Botón para quitar --> <!-- Aquí añado el botón -->
         `;
         cartList.appendChild(li);
+    }
+}
+function removeQuantity(code) {
+    const cartList = document.getElementById('cart');
+    const existingItem = Array.from(cartList.children).find(item => item.dataset.code === code);
+
+    if (existingItem) {
+        const quantitySpan = existingItem.querySelector('.quantity');
+        const currentQuantity = parseInt(quantitySpan.textContent);
+
+        if (currentQuantity > 1) {
+            const newQuantity = currentQuantity - 1; // Decrementa la cantidad
+            quantitySpan.textContent = newQuantity; // Actualiza la cantidad en la interfaz
+        } else {
+            existingItem.remove(); // Si la cantidad es 1, elimina el producto del carrito
+        }
+        updateTotalPrice(); // Actualiza el total
     }
 }
 
