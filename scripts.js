@@ -11,12 +11,12 @@ function saveProducts(products) {
     localStorage.setItem('products', JSON.stringify(products));
 }
 
-// Modifica la función addProduct para incluir cantidad
+
 function addProduct() {
     const code = document.getElementById('product-code').value.trim();
     const name = document.getElementById('product-name').value.trim();
     const price = document.getElementById('product-price').value.trim();
-    const quantity = parseInt(document.getElementById('product-quantity').value.trim()); // Agregar cantidad
+    const quantity = parseInt(document.getElementById('product-quantity').value.trim());
 
     if (code && name && price && quantity > 0) {
         const products = getProducts();
@@ -39,10 +39,12 @@ function addProduct() {
 }
 
 
+
 function clearForm() {
     document.getElementById('product-code').value = '';
     document.getElementById('product-name').value = '';
     document.getElementById('product-price').value = '';
+    document.getElementById('product-quantity').value = ''; // Limpiar el campo de cantidad
 }
 
 function searchProduct() {
@@ -65,7 +67,7 @@ function searchProduct() {
     }
 }
 
-// Modifica la función displayProducts para mostrar la cantidad
+// Función para mostrar los productos
 function displayProducts() {
     const products = getProducts();
     const productsList = document.getElementById('products');
@@ -81,6 +83,7 @@ function displayProducts() {
         productsList.appendChild(li);
     });
 }
+
 
 function deleteProduct(code) {
     let products = getProducts();
@@ -133,9 +136,6 @@ function addToCart(product) {
         const quantitySpan = existingItem.querySelector('.quantity');
         const newQuantity = parseInt(quantitySpan.textContent) + 1;
         quantitySpan.textContent = newQuantity; // Actualiza la cantidad en la interfaz
-
-        // Actualiza el total en la venta
-        updateTotalPrice();
     } else {
         // Si es un producto nuevo en el carrito, añadimos un nuevo elemento
         const li = document.createElement('li');
@@ -173,7 +173,7 @@ function updateTotalPrice() {
     document.getElementById('total-price').textContent = total.toFixed(2);
 }
 
-
+// Función para finalizar la compra
 function checkout() {
     const total = parseFloat(document.getElementById('total-price').textContent);
     let totalVendido = parseFloat(localStorage.getItem('totalVendido')) || 0;
@@ -184,7 +184,7 @@ function checkout() {
     const products = getProducts();
 
     cartItems.forEach(item => {
-        const productCode = item.textContent.split('-')[0].trim();
+        const productCode = item.dataset.code; // Usar el dataset para obtener el código
         const quantity = parseInt(item.querySelector('.quantity').textContent);
 
         // Buscar el producto en el inventario y restar la cantidad
@@ -284,10 +284,10 @@ function sellProduct() {
 
     if (product) {
         if (product.quantity > 0) {
-            product.quantity--;
-            saveProducts(products);
-            updateTotalPrice();
-            checkStock(product);
+            product.quantity--; // Resta uno del inventario
+            saveProducts(products); // Guarda el inventario actualizado
+            updateTotalPrice(); // Actualiza el total
+            checkStock(product); // Verifica el stock
             document.getElementById('scan-code').value = '';
         } else {
             alert('No hay suficiente stock de este producto.');
@@ -297,7 +297,7 @@ function sellProduct() {
     }
 }
 
-// Agregar un método para verificar el stock y mostrar alertas
+// Función para verificar el stock y mostrar alertas
 function checkStock(product) {
     if (product.quantity < 5) { // Por ejemplo, menos de 5 unidades
         alert(`Quedan solo ${product.quantity} unidades de ${product.name}.`);
