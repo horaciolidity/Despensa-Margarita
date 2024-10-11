@@ -161,15 +161,18 @@ function addQuantity(code) {
     }
 }
 
+// Función para actualizar el total del carrito
 function updateTotalPrice() {
     const cartItems = document.querySelectorAll('#cart li');
     let total = 0;
     cartItems.forEach(item => {
-        const price = parseFloat(item.textContent.split('$')[1]);
-        total += price;
+        const price = parseFloat(item.textContent.split('$')[1].split('-')[0]); // Extraer precio
+        const quantity = parseInt(item.querySelector('.quantity').textContent); // Extraer cantidad
+        total += price * quantity; // Multiplicar precio por cantidad
     });
     document.getElementById('total-price').textContent = total.toFixed(2);
 }
+
 
 function checkout() {
     const total = parseFloat(document.getElementById('total-price').textContent);
@@ -281,5 +284,11 @@ function sellProduct() {
 function checkStock(product) {
     if (product.quantity <= 5) { // Alerta cuando hay 5 o menos
         alert(`¡Alerta! El producto ${product.name} está por acabarse.`);
+    }
+}
+// Agregar un método para verificar el stock y mostrar alertas
+function checkStock(product) {
+    if (product.quantity < 5) { // Por ejemplo, menos de 5 unidades
+        alert(`Quedan solo ${product.quantity} unidades de ${product.name}.`);
     }
 }
