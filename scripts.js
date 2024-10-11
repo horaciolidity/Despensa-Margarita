@@ -180,10 +180,26 @@ function checkout() {
     totalVendido += total;
     localStorage.setItem('totalVendido', totalVendido.toFixed(2));
 
+    const cartItems = document.querySelectorAll('#cart li');
+    const products = getProducts();
+
+    cartItems.forEach(item => {
+        const productCode = item.textContent.split('-')[0].trim();
+        const quantity = parseInt(item.querySelector('.quantity').textContent);
+
+        // Buscar el producto en el inventario y restar la cantidad
+        const product = products.find(p => p.code === productCode);
+        if (product) {
+            product.quantity -= quantity; // Restar la cantidad vendida
+        }
+    });
+
+    saveProducts(products); // Guardar el inventario actualizado en localStorage
     document.getElementById('cart').innerHTML = '';
     document.getElementById('total-price').textContent = '0.00';
     alert('Compra finalizada');
 }
+
 
 function consultarTotalVendido() {
     const totalVendido = localStorage.getItem('totalVendido');
@@ -280,12 +296,7 @@ function sellProduct() {
         alert('Producto no encontrado');
     }
 }
-// Función para comprobar el stock y mostrar alertas
-function checkStock(product) {
-    if (product.quantity <= 5) { // Alerta cuando hay 5 o menos
-        alert(`¡Alerta! El producto ${product.name} está por acabarse.`);
-    }
-}
+
 // Agregar un método para verificar el stock y mostrar alertas
 function checkStock(product) {
     if (product.quantity < 5) { // Por ejemplo, menos de 5 unidades
