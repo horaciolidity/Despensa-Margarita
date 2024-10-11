@@ -129,21 +129,31 @@ function scanProduct() {
     const product = products.find(p => p.code === code);
 
     if (product) {
-        if (product.quantity > 0) {
-            addToCart(product);
-            product.quantity--; // Resta uno del inventario
-            saveProducts(products); // Actualiza el inventario después de añadir al carrito
-            updateTotalPrice();
-            document.getElementById('scan-code').value = '';
-            checkStock(product);
+        const cartList = document.getElementById('cart');
+        const existingItem = Array.from(cartList.children).find(item => item.dataset.code === product.code);
+
+        // Verifica si el producto ya está en el carrito
+        if (existingItem) {
+            // Solo se actualiza la cantidad en el carrito, no se descuenta del inventario
+            const quantitySpan = existingItem.querySelector('.quantity');
+            const newQuantity = parseInt(quantitySpan.textContent) + 1; // Incrementa la cantidad en el carrito
+            quantitySpan.textContent = newQuantity; // Actualiza la cantidad en la interfaz
         } else {
-            alert('No hay suficiente stock de este producto.');
+            // Solo se resta del inventario si el producto no está en el carrito
+            if (product.quantity > 0) {
+                addToCart(product);
+                product.quantity--; // Resta uno del inventario
+                saveProducts(products); // Actualiza el inventario después de añadir al carrito
+                updateTotalPrice(); // Actualiza el total
+                document.getElementById('scan-code').value = '';
+                checkStock(product);
+            } else {
+                alert('No hay suficiente stock de este producto.');
+            }
         }
     } else {
         alert('Producto no encontrado');
     }
-    console.log(`Escaneado producto: ${product.name}, cantidad actual: ${product.quantity}`);
-
 }
 
 
