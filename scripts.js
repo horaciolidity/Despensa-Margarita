@@ -123,7 +123,6 @@ function editProduct(code) {
     }
 }
 
-// Modificar la función scanProduct para manejar la adición al carrito
 function scanProduct() {
     const code = document.getElementById('scan-code').value.trim();
     const products = getProducts();
@@ -132,7 +131,7 @@ function scanProduct() {
     if (product) {
         if (product.quantity > 0) {
             addToCart(product);
-            product.quantity--;
+            product.quantity--; // Resta uno del inventario
             saveProducts(products); // Actualiza el inventario después de añadir al carrito
             updateTotalPrice();
             document.getElementById('scan-code').value = '';
@@ -143,23 +142,23 @@ function scanProduct() {
     } else {
         alert('Producto no encontrado');
     }
+    console.log(`Escaneado producto: ${product.name}, cantidad actual: ${product.quantity}`);
+
 }
 
-// Función para añadir productos al carrito
+
 function addToCart(product) {
     const cartList = document.getElementById('cart');
     const existingItem = Array.from(cartList.children).find(item => item.dataset.code === product.code);
 
     if (existingItem) {
-        // Si el producto ya existe en el carrito, solo incrementamos la cantidad
         const quantitySpan = existingItem.querySelector('.quantity');
         const newQuantity = parseInt(quantitySpan.textContent) + 1;
         quantitySpan.textContent = newQuantity; // Actualiza la cantidad en la interfaz
     } else {
-        // Si es un producto nuevo en el carrito, añadimos un nuevo elemento
         const li = document.createElement('li');
         li.dataset.code = product.code; // Guardamos el código del producto en un atributo data
-        li.innerHTML = `
+        li.innerHTML = ` 
             <span>${product.code} - ${product.name} - $${product.price.toFixed(2)} - Cantidad: <span class="quantity">1</span></span>
             <button onclick="addQuantity('${product.code}')">+</button> <!-- Botón para añadir más -->
         `;
