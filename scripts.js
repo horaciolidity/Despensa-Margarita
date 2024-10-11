@@ -101,7 +101,7 @@ function editProduct(code) {
     }
 }
 
-// Modifica el evento para añadir productos al carrito
+// Modificar la función scanProduct para manejar la adición al carrito
 function scanProduct() {
     const code = document.getElementById('scan-code').value.trim();
     const products = getProducts();
@@ -123,15 +123,42 @@ function scanProduct() {
     }
 }
 
-
-// Modifica la función que muestra el carrito para que incluya la lógica de venta
+// Función para añadir productos al carrito
 function addToCart(product) {
     const cartList = document.getElementById('cart');
-    const li = document.createElement('li');
-    li.innerHTML = `
-        <span>${product.code} - ${product.name} - $${product.price.toFixed(2)}</span>
-    `;
-    cartList.appendChild(li);
+    const existingItem = Array.from(cartList.children).find(item => item.dataset.code === product.code);
+
+    if (existingItem) {
+        // Si el producto ya existe en el carrito, solo incrementamos la cantidad
+        const quantitySpan = existingItem.querySelector('.quantity');
+        const newQuantity = parseInt(quantitySpan.textContent) + 1;
+        quantitySpan.textContent = newQuantity; // Actualiza la cantidad en la interfaz
+
+        // Actualiza el total en la venta
+        updateTotalPrice();
+    } else {
+        // Si es un producto nuevo en el carrito, añadimos un nuevo elemento
+        const li = document.createElement('li');
+        li.dataset.code = product.code; // Guardamos el código del producto en un atributo data
+        li.innerHTML = `
+            <span>${product.code} - ${product.name} - $${product.price.toFixed(2)} - Cantidad: <span class="quantity">1</span></span>
+            <button onclick="addQuantity('${product.code}')">+</button> <!-- Botón para añadir más -->
+        `;
+        cartList.appendChild(li);
+    }
+}
+
+// Función para aumentar la cantidad de un producto en el carrito
+function addQuantity(code) {
+    const cartList = document.getElementById('cart');
+    const existingItem = Array.from(cartList.children).find(item => item.dataset.code === code);
+
+    if (existingItem) {
+        const quantitySpan = existingItem.querySelector('.quantity');
+        const newQuantity = parseInt(quantitySpan.textContent) + 1; // Incrementa la cantidad
+        quantitySpan.textContent = newQuantity; // Actualiza la cantidad en la interfaz
+        updateTotalPrice(); // Actualiza el total
+    }
 }
 
 function updateTotalPrice() {
