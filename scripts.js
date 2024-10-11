@@ -241,6 +241,9 @@ function checkout() {
     document.getElementById('cart').innerHTML = '';
     document.getElementById('total-price').textContent = '0.00';
     alert('Compra finalizada. El inventario ha sido actualizado.');
+    
+    // Mostrar la lista de productos actualizada
+    displayProducts(); // Llama a displayProducts para actualizar la vista
 }
 
 
@@ -319,26 +322,6 @@ function downloadProducts() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-}
-// Función para manejar la venta de un producto
-function sellProduct() {
-    const code = document.getElementById('scan-code').value.trim();
-    const products = getProducts();
-    const product = products.find(p => p.code === code);
-
-    if (product) {
-        if (product.quantity > 0) {
-            product.quantity--; // Resta uno del inventario
-            saveProducts(products); // Guarda el inventario actualizado
-            updateTotalPrice(); // Actualiza el total
-            checkStock(product); // Verifica el stock
-            document.getElementById('scan-code').value = '';
-        } else {
-            alert('No hay suficiente stock de este producto.');
-        }
-    } else {
-        alert('Producto no encontrado');
-    }
 }
 
 // Función para verificar el stock y mostrar alertas
