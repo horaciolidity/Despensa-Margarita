@@ -200,34 +200,29 @@ function checkout() {
     const cartItems = document.querySelectorAll('#cart li');
     const products = getProducts();
 
-    // Creamos un objeto para almacenar la cantidad total a restar por producto
     const quantitiesToDeduct = {};
-
-    // Verificamos la cantidad a vender
-    let hasStockIssue = false; // Variable para verificar problemas de stock
+    let hasStockIssue = false; // Verifica problemas de stock
 
     cartItems.forEach(item => {
-        const productCode = item.dataset.code; // Obtener el código del producto del atributo data
+        const productCode = item.dataset.code; // Obtener el código del producto
         const quantity = parseInt(item.querySelector('.quantity').textContent);
-
         const product = products.find(p => p.code === productCode);
+        
         if (product) {
             if (product.quantity < quantity) {
                 alert(`No hay suficiente stock de ${product.name}. Solo quedan ${product.quantity} unidades.`);
-                hasStockIssue = true; // Marcar que hubo un problema de stock
-                return; // Salimos de la función si no hay suficiente stock
+                hasStockIssue = true; 
+                return; 
             }
-            // Almacenamos la cantidad a deducir
-            quantitiesToDeduct[productCode] = quantity;
+            quantitiesToDeduct[productCode] = quantity; // Almacena la cantidad a deducir
         }
     });
 
-    // Si hay un problema con el stock, no procedemos
     if (hasStockIssue) {
-        return;
+        return; // Detener si hay problemas de stock
     }
 
-    // Actualizamos el inventario
+    // Actualizar el inventario
     Object.entries(quantitiesToDeduct).forEach(([code, quantity]) => {
         const product = products.find(p => p.code === code);
         if (product) {
@@ -235,17 +230,13 @@ function checkout() {
         }
     });
 
-    saveProducts(products); // Guardar el inventario actualizado en localStorage
-
-    // Limpiar el carrito y el total
-    document.getElementById('cart').innerHTML = '';
-    document.getElementById('total-price').textContent = '0.00';
+    saveProducts(products); // Guarda el inventario actualizado
+    document.getElementById('cart').innerHTML = ''; // Limpiar el carrito
+    document.getElementById('total-price').textContent = '0.00'; // Resetear total
     alert('Compra finalizada. El inventario ha sido actualizado.');
-    
-    // Mostrar la lista de productos actualizada
-    displayProducts(); // Llama a displayProducts para actualizar la vista
-}
 
+    displayProducts(); // Actualiza la vista
+}
 
 
 function consultarTotalVendido() {
