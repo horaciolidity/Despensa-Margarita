@@ -185,23 +185,23 @@ function checkout() {
     // Creamos un objeto para almacenar la cantidad total a restar por producto
     const quantitiesToDeduct = {};
 
+    // Verificamos la cantidad a vender
     cartItems.forEach(item => {
         const productCode = item.textContent.split('-')[0].trim();
         const quantity = parseInt(item.querySelector('.quantity').textContent);
 
-        // Comprobar si la cantidad vendida excede la cantidad disponible
         const product = products.find(p => p.code === productCode);
         if (product) {
             if (product.quantity < quantity) {
                 alert(`No hay suficiente stock de ${product.name}. Solo quedan ${product.quantity} unidades.`);
                 return; // Salimos de la función si no hay suficiente stock
             }
-            // Si hay suficiente stock, almacenamos la cantidad a deducir
+            // Almacenamos la cantidad a deducir
             quantitiesToDeduct[productCode] = quantity;
         }
     });
 
-    // Si hemos salido de la función debido a un stock insuficiente, no procedemos con la venta
+    // Si hay un problema con el stock, no procedemos
     if (Object.keys(quantitiesToDeduct).length === 0) {
         return;
     }
@@ -215,11 +215,12 @@ function checkout() {
     });
 
     saveProducts(products); // Guardar el inventario actualizado en localStorage
+
+    // Limpiar el carrito y el total
     document.getElementById('cart').innerHTML = '';
     document.getElementById('total-price').textContent = '0.00';
-    alert('Compra finalizada');
+    alert('Compra finalizada. El inventario ha sido actualizado.');
 }
-
 
 
 function consultarTotalVendido() {
