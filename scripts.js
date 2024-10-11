@@ -157,6 +157,7 @@ function scanProduct() {
 }
 
 
+
 function addToCart(product) {
     const cartList = document.getElementById('cart');
     const existingItem = Array.from(cartList.children).find(item => item.dataset.code === product.code);
