@@ -349,5 +349,5 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             loadingScreen.style.display = 'none'; // Oculta completamente después de la transición
         }, 500); // Tiempo de la transición (0.5 segundos)
-    }, 2000); // Desaparece después de 2 segundos
+    }, 4000); // Desaparece después de 2 segundos
 });
