@@ -270,11 +270,12 @@ function consultarTotalVendido() {
 
     let productosVendidos = '';
     products.forEach(product => {
-        if (product.quantity === 0) { // Solo mostrar los productos agotados
-            productosVendidos += `
-                <li>${product.name} - Precio: $${product.price} - Cantidad vendida: ${product.sold || 0}</li>
-            `;
-        }
+       if (product.sold > 0) { 
+    productosVendidos += `
+        <li>${product.name} - Precio: $${product.price} - Cantidad vendida: ${product.sold}</li>
+    `;
+}
+
     });
 
     ventasDetalle.innerHTML = productosVendidos || '<li>No hay productos vendidos aún.</li>';
