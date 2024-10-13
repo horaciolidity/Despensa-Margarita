@@ -16,30 +16,14 @@ h1 {
     font-size: 3em; 
     font-weight: bold; 
     margin: 20px 0; 
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4); /* Sombra del texto más suave */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4); /* Sombra sutil del texto */
     padding: 20px 15px; 
-    border-radius: 15px; 
-    border: 2px solid rgba(255, 255, 255, 0.3); /* Borde suave semitransparente */
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3); /* Sombra para dar profundidad */
-    animation: bloom 2s ease-in-out infinite; /* Animación suave */
-    letter-spacing: 2px; /* Espaciado entre letras */
+    border-radius: 10px; 
+    border: 2px solid rgba(255, 255, 255, 0.3); /* Borde semitransparente */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Sombra para dar profundidad */
+    letter-spacing: 1.5px; /* Espaciado entre letras */
 }
 
-/* Animación de florecimiento para un efecto más dinámico */
-@keyframes bloom {
-    0% {
-        transform: scale(0.95);
-        opacity: 0.7;
-    }
-    50% {
-        transform: scale(1.05);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(0.95);
-        opacity: 0.7;
-    }
-}
 
 
 h2 {
