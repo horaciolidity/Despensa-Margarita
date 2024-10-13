@@ -242,13 +242,14 @@ function checkout() {
         return; // Detener si hay problemas de stock
     }
 
-    // Actualizar el inventario
-    Object.entries(quantitiesToDeduct).forEach(([code, quantity]) => {
-        const product = products.find(p => p.code === code);
-        if (product) {
-            product.quantity -= quantity; // Restar la cantidad vendida
-        }
-    });
+   // Actualizar el inventario
+Object.entries(quantitiesToDeduct).forEach(([code, quantity]) => {
+    const product = products.find(p => p.code === code);
+    if (product) {
+        product.quantity -= quantity; // Restar la cantidad vendida
+        product.sold = (product.sold || 0) + quantity; // Registrar la cantidad vendida
+    }
+});
 
     saveProducts(products); // Guarda el inventario actualizado
     document.getElementById('cart').innerHTML = ''; // Limpiar el carrito
