@@ -260,12 +260,66 @@ function checkout() {
 
 function consultarTotalVendido() {
     const totalVendido = localStorage.getItem('totalVendido');
-    if (totalVendido) {
-        alert(`Total Vendido: $${totalVendido}`);
-    } else {
-        alert('No hay ventas registradas.');
-    }
+    const ventasModal = document.getElementById('ventas-modal');
+    const ventasDetalle = document.getElementById('ventas-detalle');
+    const totalVendidoModal = document.getElementById('total-vendido-modal');
+
+    ventasDetalle.innerHTML = ''; // Limpiar el detalle de ventas
+    const products = getProducts();
+
+    let productosVendidos = '';
+    products.forEach(product => {
+        if (product.quantity === 0) { // Solo mostrar los productos agotados
+            productosVendidos += `
+                <li>${product.name} - Precio: $${product.price} - Cantidad vendida: ${product.sold || 0}</li>
+            `;
+        }
+    });
+
+    ventasDetalle.innerHTML = productosVendidos || '<li>No hay productos vendidos aún.</li>';
+    totalVendidoModal.textContent = totalVendido ? totalVendido : '0.00';
+    
+    ventasModal.style.display = 'block'; // Mostrar el modal
 }
+
+// Cerrar el modal
+const closeModal = document.querySelector('.close');
+closeModal.onclick = function() {
+    document.getElementById('ventas-modal').style.display = 'none';
+};
+
+// Descargar detalle de ventas
+function downloadVentas() {
+    const totalVendido = localStorage.getItem('totalVendido') || '0.00';
+    const products = getProducts();
+    let detalle = `Total Vendido: $${totalVendido}\n\nProductos Vendidos:\n`;
+
+    products.forEach(product => {
+        if (product.quantity === 0) {
+            detalle += `${product.name} - Precio: $${product.price} - Cantidad vendida: ${product.sold || 0}\n`;
+        }
+    });
+
+    const blob = new Blob([detalle], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ventas_detalle.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+// Detectar clic fuera del modal para cerrar
+window.onclick = function(event) {
+    const ventasModal = document.getElementById('ventas-modal');
+    if (event.target === ventasModal) {
+        ventasModal.style.display = 'none';
+    }
+};
+
+
+
 
 function limpiarTotalVendido() {
     localStorage.removeItem('totalVendido');
