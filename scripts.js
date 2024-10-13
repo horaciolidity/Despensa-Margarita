@@ -327,9 +327,26 @@ window.onclick = function(event) {
 
 
 function limpiarTotalVendido() {
+    // Eliminar el total vendido del almacenamiento local
     localStorage.removeItem('totalVendido');
-    alert('Total Vendido limpiado para el nuevo turno.');
+    
+    // Obtener los productos almacenados
+    const products = getProducts();
+
+    // Restablecer las cantidades vendidas (sold) de todos los productos
+    products.forEach(product => {
+        product.sold = 0; // Reiniciar las ventas a 0
+    });
+
+    // Guardar los productos actualizados
+    saveProducts(products);
+
+    // Actualizar la interfaz de usuario
+    displayProducts();
+
+    alert('Total Vendido y ventas anteriores limpiados para el nuevo turno.');
 }
+
 
 document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
 
