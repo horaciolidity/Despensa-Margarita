@@ -293,15 +293,18 @@ closeModal.onclick = function() {
 // Descargar detalle de ventas
 function downloadVentas() {
     const totalVendido = localStorage.getItem('totalVendido') || '0.00';
-    const products = getProducts();
+    const products = getProducts(); // Asegúrate de que esta función trae correctamente los productos
     let detalle = `Total Vendido: $${totalVendido}\n\nProductos Vendidos:\n`;
 
+    // Iterar sobre los productos vendidos
     products.forEach(product => {
-        if (product.quantity === 0) {
-            detalle += `${product.name} - Precio: $${product.price} - Cantidad vendida: ${product.sold || 0}\n`;
+        // Solo incluir los productos que se vendieron
+        if (product.sold && product.sold > 0) {
+            detalle += `${product.name} - Precio: $${product.price} - Cantidad vendida: ${product.sold}\n`;
         }
     });
 
+    // Generar archivo de texto
     const blob = new Blob([detalle], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
