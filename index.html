@@ -3,22 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Despensa Margarita</title>
+    <title>DESPENSA MARGARITA</title>
     <link rel="stylesheet" href="styles.css">
+
 </head>
 <body>
+
+  
+
+    
 <div class="container">
         <div class="header" style="position: relative; text-align: center; margin-bottom: 20px;">
-            <h1>Despensa Margarita</h1>
-<img src="https://despensas-margarita.vercel.app/despensa.jfif" alt="Fondo" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 100%; height: 100px; object-fit: cover; z-index: 1; opacity: 0.5;">
+            <h1>DESPENSA MARGARITA</h1>
+<img src="https://polleria-marina.vercel.app/photo_5048917241554382566_y.jpg" alt="Fondo" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 100%; height: 100px; object-fit: cover; z-index: 1; opacity: 0.5;">
             
         </div>
+  
+    <section>
+  <h2>Apertura de Caja</h2>
+  <input type="number" id="opening-cash" placeholder="Monto inicial">
+  <button onclick="setOpeningCash()">Iniciar Caja</button>
+</section>
 
        <section id="product-form">
     <input type="text" id="product-code" placeholder="Código de Barras">
     <input type="text" id="product-name" placeholder="Nombre del Producto">
     <input type="number" id="product-price" placeholder="Precio">
+           <!-- Campo nuevo para precio de costo -->
+<div>
+  <label for="product-cost">Costo del producto:</label>
+  <input type="number" step="0.01" id="product-cost" placeholder="Ej: 100.00">
+</div>
+
+ <label for="product-unit">Tipo de unidad:</label>
+<select id="product-unit">
+  <option value="unidad">Unidad</option>
+  <option value="kg">Kilogramo</option>
+  <option value="litro">Litro</option>
+</select>
+
+
+
+
+
     <input type="number" id="product-quantity" placeholder="Cantidad" min="1"> <!-- Campo de cantidad -->
+          
+   
     <button onclick="addProduct()">Agregar Producto</button>
 </section>
 
@@ -36,19 +66,49 @@
             <button onclick="scanProduct()">Añadir al Carrito</button>
             <ul id="cart"></ul>
             <p>Total: $<span id="total-price">0.00</span></p>
-            <button onclick="checkout()">Finalizar Compra</button>
+
+         
+
+<div>
+
+  <button onclick="finalizeSale('efectivo')">Pago en Efectivo</button>
+  <button onclick="finalizeSale('transferencia')">Pago Transferido</button>
+</div>
+
+
+
+            
         </section>
+
+
+    
      <div style="text-align: center;">
             <button class="action-button" onclick="consultarTotalVendido()" style="padding: 5px 10px; font-size: 0.9em; border-radius: 15px; background-color: #007bff; color: white; margin: 5px; border: none; cursor: pointer;">Consultar Total Vendido</button>
-            <button class="action-button" onclick="limpiarTotalVendido()" style="padding: 5px 10px; font-size: 0.9em; border-radius: 15px; background-color: #dc3545; color: white; margin: 5px; border: none; cursor: pointer;">Limpiar Total Vendido</button>
+<button class="action-button"
+        onclick="limpiarTotalVendido()"
+        style="display: none; padding: 5px 10px; font-size: 0.9em; border-radius: 15px; background-color: #dc3545; color: white; margin: 5px; border: none; cursor: pointer;">
+  Limpiar Total Vendido
+</button>
         </div>
-
-<div id="ventas-modal" class="modal">
+    
+<div id="ventas-modal" class="modal" style="display: none;">
     <div class="modal-content">
         <span class="close">&times;</span>
         <h2>Detalle de Productos Vendidos</h2>
-        <ul id="ventas-detalle"></ul>
-        <p>Total Vendido: $<span id="total-vendido-modal">0.00</span></p>
+        <ul id="ventas-detalle" style="display: none;"></ul>
+        <p>Total Vendido: $<span id="total-vendido-modal" style="display: none;">0.00</span></p>
+
+<section>
+  <h2>Arqueo de Caja</h2>
+  <button onclick="showSalesSummary()">Mostrar Arqueo</button>
+  <textarea id="sales-summary" rows="15" style="width:100%; margin-top:10px;"></textarea><br>
+  <button onclick="downloadSummary()">Descargar TXT</button>
+  <button onclick="resetDay()">Limpiar Total Vendido</button>
+</section>
+
+
+
+        
         <button onclick="downloadVentas()">Descargar Detalle</button>
     </div>
 </div>
@@ -74,16 +134,18 @@
         </section>
     </div>
    <div style="position: fixed; bottom: 10px; right: 10px; background-color: rgba(0, 0, 0, 0.7); color: white; padding: 5px; border-radius: 10px; z-index: 1000; text-align: right; font-size: 0.75em;">
-    <p>Contacto Horacio 2617048835</p>
+    <p>⚠️ ¡Sistema actualizado!<br>📞 Contacto: Horacio 2617048835</p>
+
     <p> correo </p>
     <p>horacio.dev.sol@gmail.com</p>
 </div>
 <div id="loading-screen">
     <div class="spinner"></div>
-    <img src="https://despensas-margarita.vercel.app/despensa.jfif" alt="Imagen de Carga" id="loading-image">
+    <img src="https://polleria-marina.vercel.app/photo_5048917241554382566_y.jpg" alt="Imagen de Carga" id="loading-image">
 </div>
 
 
     <script src="scripts.js"></script>
+    <script src="emisor-cliente.js"></script> <!-- 👉 nuevo -->
 </body>
 </html>
