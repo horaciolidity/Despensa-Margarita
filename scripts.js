@@ -32,6 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 500);
     }
   }, 4000);
+
+  // Inicializar listeners del modal de vuelto si existe en el HTML
+  initCashModalOnce();
 });
 
 /**********************
@@ -67,10 +70,9 @@ function addProduct() {
 
     if (i !== -1) {
       products[i].quantity = Number(products[i].quantity) + Number(quantity);
-      // Mantener flags/props existentes si no vinieron en el form
       products[i].unit   = products[i].unit ?? unit;
       products[i].isBulk = products[i].isBulk ?? isBulk;
-      products[i].price  = price; // actualiza precio si cambió
+      products[i].price  = price;
       products[i].cost   = isNaN(cost) ? (products[i].cost || 0) : cost;
     } else {
       products.push(newProduct);
@@ -376,8 +378,7 @@ function updateTotalPrice() {
 }
 
 /**********************
- * CHECKOUT (si lo usás)
- * — Corregido para decimales —
+ * CHECKOUT (opcional) — Corregido para decimales
  **********************/
 function checkout() {
   const total = parseFloat(document.getElementById('total-price').textContent);
@@ -393,7 +394,7 @@ function checkout() {
 
   cartItems.forEach(item => {
     const productCode = item.dataset.code;
-    const quantity = parseFloat(item.querySelector('.quantity').textContent); // ✅ DECIMAL
+    const quantity = parseFloat(item.querySelector('.quantity').textContent);
     const product = products.find(p => p.code === productCode);
 
     if (product) {
@@ -431,7 +432,7 @@ function setOpeningCash() {
   const value = parseFloat(input.value.trim());
   if (!isNaN(value) && value >= 0) {
     localStorage.setItem('openingCash', fmtMoney(value));
-    localStorage.setItem('openingCashSet', 'true'); // ✅ marcar apertura
+    localStorage.setItem('openingCashSet', 'true');
     input.disabled = true;
     alert("Caja iniciada con $" + fmtMoney(value));
   } else {
@@ -455,8 +456,6 @@ function saveSale(cart, paymentMethod) {
 function finalizeSale(method) {
   const cartItems = document.querySelectorAll('#cart li');
   if (cartItems.length === 0) {
-  
-
     alert('El carrito está vacío');
     return;
   }
@@ -479,7 +478,6 @@ function finalizeSale(method) {
       return;
     }
 
-    // No descontamos aún; lo hacemos tras confirmar el pago
     const unitPrice = totalPrice / quantity;
     cart.push({
       code,
@@ -492,10 +490,8 @@ function finalizeSale(method) {
 
   if (hasStockIssue) return;
 
-  // Total de la venta
   const totalVenta = cart.reduce((acc, p) => acc + (p.price * p.quantity), 0);
 
-  // Normalizar método y manejar EFECTIVO
   const m = (method || '').toString().toLowerCase();
   const methodLabel = m.startsWith('efect') ? 'Efectivo'
                     : m.startsWith('transf') ? 'Transferido'
@@ -504,30 +500,15 @@ function finalizeSale(method) {
   let pagoCon = null;
   let vuelto = null;
 
-if (methodLabel === 'Efectivo') {
-  const input = prompt(`Total $${fmtMoney(totalVenta)}.\n¿Con cuánto paga?`, fmtMoney(totalVenta));
-  const monto = parseFloat(input);
-  if (isNaN(monto) || monto <= 0) {
-    alert('Monto inválido.');
-    return;
+  if (methodLabel === 'Efectivo') {
+    const input = prompt(`Total $${fmtMoney(totalVenta)}.\n¿Con cuánto paga?`, fmtMoney(totalVenta));
+    const monto = parseFloat(input);
+    if (isNaN(monto) || monto <= 0) { alert('Monto inválido.'); return; }
+    if (monto < totalVenta) { alert(`Monto insuficiente. Faltan $${fmtMoney(totalVenta - monto)}.`); return; }
+    pagoCon = Number(fmtMoney(monto));
+    vuelto = Number(fmtMoney(monto - totalVenta));
   }
-  if (monto < totalVenta) {
-    alert(`Monto insuficiente. Faltan $${fmtMoney(totalVenta - monto)}.`);
-    return;
-  }
-  pagoCon = Number(fmtMoney(monto));
-  vuelto = Number(fmtMoney(monto - totalVenta));
 
-  // 🔹 Mostrar modal en vez de alert simple
-  showCashChangeModal({
-    total: totalVenta,
-    pagoCon,
-    vuelto
-  });
-}
-
-
-  // Guardar venta
   const novedades = prompt("¿Desea agregar alguna novedad sobre esta venta? (opcional)") || "";
   const sales = JSON.parse(localStorage.getItem('sales')) || [];
   const timestamp = new Date().toLocaleString();
@@ -540,7 +521,6 @@ if (methodLabel === 'Efectivo') {
   });
   localStorage.setItem('sales', JSON.stringify(sales));
 
-  // Actualizar totalVendido
   let totalVendido = parseFloat(localStorage.getItem('totalVendido')) || 0;
   totalVendido += totalVenta;
   localStorage.setItem('totalVendido', fmtMoney(totalVendido));
@@ -560,17 +540,65 @@ if (methodLabel === 'Efectivo') {
   document.getElementById('total-price').textContent = '0.00';
   displayProducts();
   updateTotalPrice();
-
-  if (methodLabel === 'Efectivo') {
-    alert(`Venta EFECTIVO\nTotal: $${fmtMoney(totalVenta)}\nPagó con: $${fmtMoney(pagoCon)}\nVuelto: $${fmtMoney(vuelto)}`);
-  } else {
-    alert('Venta registrada con pago: ' + methodLabel);
-  }
-
   if (typeof enviarCarritoAlCliente === 'function') enviarCarritoAlCliente();
 
   const canal = new BroadcastChannel('pos_channel');
   canal.postMessage({ tipo: 'despedida' });
+
+  // 👉 Mostrar SOLO el modal para efectivo (sin alerts extra)
+  if (methodLabel === 'Efectivo') {
+    showCashChangeModal({ total: totalVenta, pagoCon, vuelto });
+  } else {
+    // Si querés conservar un aviso para transferencias, dejá este alert o quitálo.
+    // alert('Venta registrada con pago: ' + methodLabel);
+  }
+}
+
+/**********************
+ * MODAL DE VUELTO (JS)
+ * — Requiere el HTML del modal en index.html —
+ **********************/
+function showCashChangeModal({ total, pagoCon, vuelto }) {
+  const root = document.getElementById('cash-change-modal');
+
+  // Si no está el HTML del modal, usamos fallback
+  if (!root) {
+    alert(`Venta EFECTIVO\nTotal: $${fmtMoney(total)}\nPagó con: $${fmtMoney(pagoCon)}\nVuelto: $${fmtMoney(vuelto)}`);
+    return;
+  }
+
+  root.querySelector('#ccm-total').textContent   = `$${fmtMoney(total)}`;
+  root.querySelector('#ccm-pagocon').textContent = `$${fmtMoney(pagoCon)}`;
+  root.querySelector('#ccm-vuelto').textContent  = `$${fmtMoney(vuelto)}`;
+  root.querySelector('#ccm-vuelto-2').textContent = `$${fmtMoney(vuelto)}`;
+
+  root.classList.add('show');
+  root.setAttribute('aria-hidden', 'false');
+
+  setTimeout(() => document.getElementById('ccm-ok')?.focus(), 30);
+}
+
+function hideCashChangeModal() {
+  const root = document.getElementById('cash-change-modal');
+  if (!root) return;
+  root.classList.remove('show');
+  root.setAttribute('aria-hidden', 'true');
+}
+
+function initCashModalOnce() {
+  const root = document.getElementById('cash-change-modal');
+  if (!root || root.dataset.bound === '1') return;
+
+  root.querySelector('.cash-modal-close')?.addEventListener('click', hideCashChangeModal);
+  document.getElementById('ccm-ok')?.addEventListener('click', hideCashChangeModal);
+  root.addEventListener('click', (e) => { if (e.target === root) hideCashChangeModal(); });
+  document.getElementById('ccm-print')?.addEventListener('click', () => { window.print(); });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && root.classList.contains('show')) hideCashChangeModal();
+  });
+
+  root.dataset.bound = '1';
 }
 
 /**********************
@@ -629,7 +657,7 @@ function showSalesSummary() {
   summary += `\n💵 Total vendido: $${fmtMoney(totalCash + totalTransfer)}`;
 
   const textarea = document.getElementById('sales-summary');
-  textarea.value = summary;
+  if (textarea) textarea.value = summary;
 }
 
 function payWithTransfer() {
@@ -656,6 +684,135 @@ function handleFileSelect(event) {
   if (file) {
     const reader = new FileReader();
     reader.onload = function(e) {
+      const contents = e.target.result;
+      processFileContents(contents);
+    };
+    reader.readAsText(file);
+  }
+}
+
+function processFileContents(contents) {
+  const products = parseProducts(contents);
+  saveProductsToLocalStorage(products);
+  displayProducts();
+}
+
+function parseProducts(contents) {
+  const lines = contents.split('\n');
+  const products = lines.map(line => {
+    const parts = line.split(',');
+    if (parts.length !== 4) {
+      console.error('Formato de producto inválido:', line);
+      return null;
+    }
+    const [code, name, price, quantity] = parts;
+    return {
+      code: code.trim(),
+      name: name.trim(),
+      price: parseFloat(price.trim()),
+      quantity: parseFloat(quantity.trim())
+    };
+  }).filter(Boolean);
+  return products;
+}
+
+function saveProductsToLocalStorage(products) {
+  const existingProducts = getProducts();
+  const updatedProducts = existingProducts.concat(products);
+  saveProducts(updatedProducts);
+}
+
+function loadProducts() {
+  const products = getProducts();
+  displayProducts(products);
+}
+
+function downloadProducts() {
+  const products = getProducts();
+  const contents = products.map(p => `${p.code}, ${p.name}, ${p.price}, ${p.quantity}`).join('\n');
+  const blob = new Blob([contents], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'productos.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+/**********************
+ * LIMPIEZAS
+ **********************/
+function getVentas() {
+  return JSON.parse(localStorage.getItem('ventas')) || [];
+}
+function saveVentas(ventas) {
+  localStorage.setItem('ventas', JSON.stringify(ventas));
+}
+
+// Verificar stock bajo
+function checkStock(product) {
+  if (product.quantity < 5) {
+    alert(`Quedan solo ${product.quantity} unidades de ${product.name}.`);
+  }
+}
+
+function limpiarTotalVendido() {
+  localStorage.removeItem('totalVendido');
+  localStorage.removeItem('ventas');
+  localStorage.removeItem('openingCash');
+  localStorage.setItem('openingCashSet', 'false');
+
+  const products = getProducts();
+  products.forEach(product => { product.sold = 0; });
+  saveProducts(products);
+
+  displayProducts();
+  const ta = document.getElementById("sales-summary");
+  if (ta) ta.value = '';
+  const oc = document.getElementById("opening-cash");
+  if (oc) oc.disabled = false;
+
+  alert('Turno reiniciado. Todo el historial fue limpiado.');
+  if (typeof resetCliente === 'function') resetCliente();
+}
+
+function resetDay() {
+  localStorage.removeItem('sales');
+  localStorage.removeItem('openingCash');
+  localStorage.removeItem('openingCashSet');
+  localStorage.removeItem('totalVendido');
+
+  const products = getProducts();
+  products.forEach(p => p.sold = 0);
+  saveProducts(products);
+
+  const ta = document.getElementById("sales-summary");
+  if (ta) ta.value = "";
+  const oc = document.getElementById("opening-cash");
+  if (oc) oc.disabled = false;
+
+  displayProducts();
+
+  if (typeof resetCliente === 'function') {
+    resetCliente();
+  }
+
+  alert("Caja, ventas y arqueo limpiados exitosamente.");
+}
+
+/*********** COMPAT: restaurar consultarTotalVendido() ***********/
+function consultarTotalVendido() {
+  showSalesSummary();
+  const ventasModal = document.getElementById('ventas-modal');
+  if (ventasModal) ventasModal.style.display = 'block';
+}
+document.addEventListener('click', (e) => {
+  if (e.target.matches('.close')) {
+    const ventasModal = document.getElementById('ventas-modal');
+    if (ventasModal) ventasModal.style.display = 'none';
+  }
+});
       const contents = e.target.result;
       processFileContents(contents);
     };
