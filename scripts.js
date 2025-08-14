@@ -766,3 +766,20 @@ function consultarTotalVendido() {
   showSalesSummary();
 }
 
+/*********** COMPAT: restaurar consultarTotalVendido() ***********/
+function consultarTotalVendido() {
+  // Reusa el cálculo actual
+  showSalesSummary();
+
+  // Si usás modal, abrilo (compat con tu HTML original)
+  const ventasModal = document.getElementById('ventas-modal');
+  if (ventasModal) ventasModal.style.display = 'block';
+}
+
+/* Botón cerrar modal: hacerlo robusto por si el botón .close aún no existe al cargar */
+document.addEventListener('click', (e) => {
+  if (e.target.matches('.close')) {
+    const ventasModal = document.getElementById('ventas-modal');
+    if (ventasModal) ventasModal.style.display = 'none';
+  }
+});
