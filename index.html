@@ -144,8 +144,45 @@
     <img src="https://despensa-margarita.vercel.app/photo_4958725565448302119_y.jpg" alt="Imagen de Carga" id="loading-image">
 </div>
 
+<!-- Modal Vuelto -->
+<div id="cash-change-modal" class="cash-modal-backdrop" aria-hidden="true">
+  <div class="cash-modal">
+    <button class="cash-modal-close" title="Cerrar">&times;</button>
+
+    <div class="cash-modal-header">
+      <h2>Vuelto</h2>
+      <p class="cash-modal-subtitle">Detalle de pago en efectivo</p>
+    </div>
+
+    <div class="cash-modal-amount">
+      <span>Entregar Vuelto</span>
+      <strong id="ccm-vuelto">$0,00</strong>
+    </div>
+
+    <div class="cash-modal-breakdown">
+      <div class="row">
+        <span>Total de la venta</span>
+        <span id="ccm-total">$0,00</span>
+      </div>
+      <div class="row">
+        <span>Pagó con</span>
+        <span id="ccm-pagocon">$0,00</span>
+      </div>
+      <div class="row total">
+        <span>Vuelto</span>
+        <span id="ccm-vuelto-2">$0,00</span>
+      </div>
+    </div>
+
+    <div class="cash-modal-actions">
+      <button class="btn-print" id="ccm-print">Imprimir / Guardar</button>
+      <button class="btn-ok" id="ccm-ok">Listo</button>
+    </div>
+  </div>
+</div>
 
     <script src="scripts.js"></script>
     <script src="emisor-cliente.js"></script> <!-- 👉 nuevo -->
+    
 </body>
 </html>
