@@ -455,6 +455,8 @@ function saveSale(cart, paymentMethod) {
 function finalizeSale(method) {
   const cartItems = document.querySelectorAll('#cart li');
   if (cartItems.length === 0) {
+  
+
     alert('El carrito está vacío');
     return;
   }
@@ -502,20 +504,28 @@ function finalizeSale(method) {
   let pagoCon = null;
   let vuelto = null;
 
-  if (methodLabel === 'Efectivo') {
-    const input = prompt(`Total $${fmtMoney(totalVenta)}.\n¿Con cuánto paga?`, fmtMoney(totalVenta));
-    const monto = parseFloat(input);
-    if (isNaN(monto) || monto <= 0) {
-      alert('Monto inválido.');
-      return;
-    }
-    if (monto < totalVenta) {
-      alert(`Monto insuficiente. Faltan $${fmtMoney(totalVenta - monto)}.`);
-      return;
-    }
-    pagoCon = Number(fmtMoney(monto));
-    vuelto = Number(fmtMoney(monto - totalVenta));
+if (methodLabel === 'Efectivo') {
+  const input = prompt(`Total $${fmtMoney(totalVenta)}.\n¿Con cuánto paga?`, fmtMoney(totalVenta));
+  const monto = parseFloat(input);
+  if (isNaN(monto) || monto <= 0) {
+    alert('Monto inválido.');
+    return;
   }
+  if (monto < totalVenta) {
+    alert(`Monto insuficiente. Faltan $${fmtMoney(totalVenta - monto)}.`);
+    return;
+  }
+  pagoCon = Number(fmtMoney(monto));
+  vuelto = Number(fmtMoney(monto - totalVenta));
+
+  // 🔹 Mostrar modal en vez de alert simple
+  showCashChangeModal({
+    total: totalVenta,
+    pagoCon,
+    vuelto
+  });
+}
+
 
   // Guardar venta
   const novedades = prompt("¿Desea agregar alguna novedad sobre esta venta? (opcional)") || "";
