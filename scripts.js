@@ -783,3 +783,56 @@ document.addEventListener('click', (e) => {
     if (ventasModal) ventasModal.style.display = 'none';
   }
 });
+
+function showCashChangeModal({ total, pagoCon, vuelto }) {
+  const root = document.getElementById('cash-change-modal');
+  if (!root) return;
+
+  // Completar valores
+  const fmt = (n) => Number(n || 0).toFixed(2);
+  root.querySelector('#ccm-total').textContent   = `$${fmt(total)}`;
+  root.querySelector('#ccm-pagocon').textContent = `$${fmt(pagoCon)}`;
+  root.querySelector('#ccm-vuelto').textContent  = `$${fmt(vuelto)}`;
+  root.querySelector('#ccm-vuelto-2').textContent = `$${fmt(vuelto)}`;
+
+  // Mostrar
+  root.classList.add('show');
+  root.setAttribute('aria-hidden', 'false');
+
+  // Focus en botón OK
+  setTimeout(() => document.getElementById('ccm-ok')?.focus(), 50);
+}
+
+function hideCashChangeModal() {
+  const root = document.getElementById('cash-change-modal');
+  if (!root) return;
+  root.classList.remove('show');
+  root.setAttribute('aria-hidden', 'true');
+}
+
+// Listeners de cierre/imprimir (una sola vez)
+(function initCashModalOnce(){
+  const root = document.getElementById('cash-change-modal');
+  if (!root || root.dataset.bound === '1') return;
+
+  // Cerrar con botón X / OK / clic fuera
+  root.querySelector('.cash-modal-close')?.addEventListener('click', hideCashChangeModal);
+  document.getElementById('ccm-ok')?.addEventListener('click', hideCashChangeModal);
+  root.addEventListener('click', (e) => {
+    if (e.target === root) hideCashChangeModal();
+  });
+
+  // Imprimir/guardar (imprime solo el contenido del modal)
+  document.getElementById('ccm-print')?.addEventListener('click', () => {
+    // Podés personalizar esto con una plantilla de ticket
+    window.print();
+  });
+
+  // ESC para cerrar
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && root.classList.contains('show')) hideCashChangeModal();
+  });
+
+  root.dataset.bound = '1';
+})();
+
