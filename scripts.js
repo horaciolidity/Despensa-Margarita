@@ -677,7 +677,12 @@ function downloadSummary() {
 /**********************
  * IMPORT/EXPORT PRODUCTOS
  **********************/
-document.getElementById('fileInput')?.addEventListener('change', handleFileSelect, false);
+(function(){
+  var fileInputEl = document.getElementById('fileInput');
+  if (fileInputEl) {
+    fileInputEl.addEventListener('change', handleFileSelect, false);
+  }
+})();
 
 function handleFileSelect(event) {
   const file = event.target.files[0];
@@ -952,22 +957,37 @@ document.addEventListener('click', (e) => {
 });
 
 function showCashChangeModal({ total, pagoCon, vuelto }) {
-  const root = document.getElementById('cash-change-modal');
-  if (!root) return;
+  var root = document.getElementById('cash-change-modal');
 
-  // Completar valores
-  const fmt = (n) => Number(n || 0).toFixed(2);
-  root.querySelector('#ccm-total').textContent   = `$${fmt(total)}`;
-  root.querySelector('#ccm-pagocon').textContent = `$${fmt(pagoCon)}`;
-  root.querySelector('#ccm-vuelto').textContent  = `$${fmt(vuelto)}`;
-  root.querySelector('#ccm-vuelto-2').textContent = `$${fmt(vuelto)}`;
+  // Si no está el HTML del modal, usamos fallback
+  if (!root) {
+    alert(
+      'Venta EFECTIVO\n' +
+      'Total: $' + fmtMoney(total) + '\n' +
+      'Pagó con: $' + fmtMoney(pagoCon) + '\n' +
+      'Vuelto: $' + fmtMoney(vuelto)
+    );
+    return;
+  }
 
-  // Mostrar
+  var elTotal   = document.getElementById('ccm-total');
+  var elPagoCon = document.getElementById('ccm-pagocon');
+  var elVuelto1 = document.getElementById('ccm-vuelto');
+  var elVuelto2 = document.getElementById('ccm-vuelto-2');
+
+  if (elTotal)   elTotal.textContent   = '$' + fmtMoney(total);
+  if (elPagoCon) elPagoCon.textContent = '$' + fmtMoney(pagoCon);
+  if (elVuelto1) elVuelto1.textContent = '$' + fmtMoney(vuelto);
+  if (elVuelto2) elVuelto2.textContent = '$' + fmtMoney(vuelto);
+
   root.classList.add('show');
   root.setAttribute('aria-hidden', 'false');
 
-  // Focus en botón OK
-  setTimeout(() => document.getElementById('ccm-ok')?.focus(), 50);
+  // focus en OK si existe
+  setTimeout(function () {
+    var okBtn = document.getElementById('ccm-ok');
+    if (okBtn) okBtn.focus();
+  }, 30);
 }
 
 function hideCashChangeModal() {
@@ -977,29 +997,36 @@ function hideCashChangeModal() {
   root.setAttribute('aria-hidden', 'true');
 }
 
-// Listeners de cierre/imprimir (una sola vez)
-(function initCashModalOnce(){
-  const root = document.getElementById('cash-change-modal');
+function initCashModalOnce() {
+  var root = document.getElementById('cash-change-modal');
   if (!root || root.dataset.bound === '1') return;
 
-  // Cerrar con botón X / OK / clic fuera
-  root.querySelector('.cash-modal-close')?.addEventListener('click', hideCashChangeModal);
-  document.getElementById('ccm-ok')?.addEventListener('click', hideCashChangeModal);
-  root.addEventListener('click', (e) => {
+  var btnClose = root.querySelector('.cash-modal-close');
+  if (btnClose) {
+    btnClose.addEventListener('click', hideCashChangeModal);
+  }
+
+  var okBtn = document.getElementById('ccm-ok');
+  if (okBtn) {
+    okBtn.addEventListener('click', hideCashChangeModal);
+  }
+
+  root.addEventListener('click', function (e) {
     if (e.target === root) hideCashChangeModal();
   });
 
-  // Imprimir/guardar (imprime solo el contenido del modal)
-  document.getElementById('ccm-print')?.addEventListener('click', () => {
-    // Podés personalizar esto con una plantilla de ticket
-    window.print();
-  });
+  var printBtn = document.getElementById('ccm-print');
+  if (printBtn) {
+    printBtn.addEventListener('click', function () {
+      window.print();
+    });
+  }
 
-  // ESC para cerrar
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && root.classList.contains('show')) hideCashChangeModal();
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && root.classList.contains('show')) {
+      hideCashChangeModal();
+    }
   });
 
   root.dataset.bound = '1';
-})();
-
+}
