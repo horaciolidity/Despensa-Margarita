@@ -319,3 +319,122 @@ ul li:hover {
 .modal button:hover {
     background-color: #555; /* Cambia el fondo al pasar el cursor */
 }
+/* Backdrop */
+.cash-modal-backdrop {
+  position: fixed; inset: 0;
+  display: none; /* hidden por defecto */
+  align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(2px);
+  z-index: 9999;
+}
+
+/* Caja */
+.cash-modal {
+  width: min(540px, 92vw);
+  background: linear-gradient(180deg, #0f1217, #10151c);
+  color: #e7edf5;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+  padding: 22px;
+  transform: translateY(10px) scale(0.98);
+  opacity: 0;
+  transition: all .2s ease;
+  position: relative;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+}
+
+/* Mostrar animado */
+.cash-modal-backdrop.show { display: flex; }
+.cash-modal-backdrop.show .cash-modal {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* Header */
+.cash-modal-header h2 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: .3px;
+}
+.cash-modal-subtitle {
+  margin: 2px 0 0;
+  opacity: .7;
+  font-size: 13px;
+}
+
+/* Cantidad grande */
+.cash-modal-amount {
+  margin: 18px 0 12px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.cash-modal-amount span {
+  display: block;
+  font-size: 13px;
+  opacity: .8;
+  margin-bottom: 6px;
+}
+.cash-modal-amount strong {
+  display: block;
+  font-weight: 800;
+  font-size: clamp(36px, 6vw, 54px);
+  line-height: 1.1;
+  letter-spacing: .5px;
+}
+
+/* Desglose */
+.cash-modal-breakdown {
+  margin: 6px 0 10px;
+}
+.cash-modal-breakdown .row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 2px;
+  border-bottom: 1px dashed rgba(255,255,255,0.08);
+  font-size: 15px;
+}
+.cash-modal-breakdown .row:last-child { border-bottom: 0; }
+.cash-modal-breakdown .row.total {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Botones */
+.cash-modal-actions {
+  display: flex; gap: 10px; justify-content: flex-end;
+  margin-top: 14px;
+}
+.cash-modal-actions .btn-ok,
+.cash-modal-actions .btn-print {
+  appearance: none; border: 0; cursor: pointer;
+  padding: 10px 14px; border-radius: 10px;
+  font-weight: 600; font-size: 14px;
+}
+.cash-modal-actions .btn-ok {
+  background: #16a34a; color: #fff;
+}
+.cash-modal-actions .btn-ok:hover { filter: brightness(1.05); }
+.cash-modal-actions .btn-print {
+  background: #0b6aa4; color: #fff;
+}
+
+/* Cerrar */
+.cash-modal-close {
+  position: absolute; top: 8px; right: 10px;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  color: #fff; border: 0; cursor: pointer;
+  font-size: 22px; line-height: 34px; text-align: center;
+}
+.cash-modal-close:hover { background: rgba(255,255,255,0.12); }
+
+/* Soporte tema claro (opcional) */
+@media (prefers-color-scheme: light) {
+  .cash-modal { background: #ffffff; color: #0f1720; border-color: rgba(0,0,0,0.06);}
+  .cash-modal-amount { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.06); }
+  .cash-modal-breakdown .row { border-color: rgba(0,0,0,0.08); }
+  .cash-modal-actions .btn-print { background: #0b6aa4; color: #fff; }
+}
