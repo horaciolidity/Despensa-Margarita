@@ -762,3 +762,7 @@ function resetDay() {
 
   alert("Caja, ventas y arqueo limpiados exitosamente.");
 }
+function consultarTotalVendido() {
+  showSalesSummary();
+}
+
