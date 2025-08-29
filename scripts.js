@@ -12,6 +12,42 @@ const fmtQty   = n => Number(n || 0).toFixed(QTY_DEC);
 const fmtMoney = n => Number(n || 0).toFixed(MONEY_DEC);
 
 /**********************
+ * PRODUCT VALIDATION
+ **********************/
+function _num(v, dflt = 0) {
+  var n = Number(v);
+  return (isNaN(n) ? dflt : n);
+}
+
+/**
+ * Reglas:
+ * - cost >= 0
+ * - price > 0
+ * - price >= cost (no vender por debajo del costo)
+ * Devuelve { ok, reasons[] }
+ */
+function validateProduct(p) {
+  var cost  = _num(p.cost, 0);
+  var price = _num(p.price, 0);
+  var reasons = [];
+
+  if (cost < 0) reasons.push('El costo no puede ser negativo.');
+  if (price <= 0) reasons.push('El precio debe ser mayor a 0.');
+  if (price < cost) reasons.push('El precio es menor al costo.');
+
+  return { ok: reasons.length === 0, reasons: reasons };
+}
+
+// Marca el objeto con flags para UI (sin alterar números)
+function withValidity(p) {
+  var v = validateProduct(p);
+  var copy = Object.assign({}, p);
+  copy._invalid = !v.ok;
+  copy._invalid_reasons = v.reasons;
+  return copy;
+}
+
+/**********************
  * INIT
  **********************/
 document.addEventListener('DOMContentLoaded', () => {
@@ -68,28 +104,43 @@ function addProduct() {
   var unit = document.getElementById('product-unit').value;
   var isBulk = (unit === 'kg' || unit === 'litro');
 
-  if (code && name && price > 0 && quantity > 0) {
-    var products = getProducts();
-    var i = products.findIndex(p => p.code === code);
+  if (!code || !name) { alert('Código y nombre son obligatorios.'); return; }
+  if (isNaN(price)) { price = 0; }
+  if (isNaN(quantity)) { quantity = 0; }
+  if (isNaN(cost)) { cost = 0; }
 
-    var newProduct = { code, name, price, quantity, unit, isBulk, cost };
+  var products = getProducts();
+  var i = products.findIndex(p => p.code === code);
 
-    if (i !== -1) {
-      products[i].quantity = Number(products[i].quantity) + Number(quantity);
-      products[i].unit   = products[i].unit != null ? products[i].unit : unit;
-      products[i].isBulk = products[i].isBulk != null ? products[i].isBulk : isBulk;
-      products[i].price  = price;
-      products[i].cost   = isNaN(cost) ? (products[i].cost || 0) : cost;
-    } else {
-      products.push(newProduct);
-    }
+  var base = { code, name, price, quantity, unit, isBulk, cost };
+  var tagged = withValidity(base);
 
-    saveProducts(products);
-    displayProducts();
-    updateTotalPrice();
-    if (typeof enviarCarritoAlCliente === 'function') enviarCarritoAlCliente();
+  if (i !== -1) {
+    // actualizamos manteniendo contadores previos
+    var prev = products[i];
+    products[i] = withValidity({
+      code,
+      name,
+      price,
+      unit: prev.unit != null ? prev.unit : unit,
+      isBulk: prev.isBulk != null ? prev.isBulk : isBulk,
+      cost: isNaN(cost) ? (prev.cost || 0) : cost,
+      quantity: _num(prev.quantity, 0) + _num(quantity, 0)
+    });
+  } else {
+    products.push(tagged);
+  }
 
-    clearForm();
+  saveProducts(products);
+  displayProducts();
+  updateTotalPrice();
+  if (typeof enviarCarritoAlCliente === 'function') enviarCarritoAlCliente();
+
+  clearForm();
+
+  // Mensaje si quedó inválido
+  if (tagged._invalid) {
+    alert('Producto guardado con ALERTA para corregir:\n- ' + tagged._invalid_reasons.join('\n- '));
   }
 }
 
@@ -109,12 +160,16 @@ function searchProduct() {
   resultDiv.innerHTML = '';
 
   if (product) {
+    var productSafe = withValidity(product);
     resultDiv.innerHTML = ''
-      + '<p>Nombre: ' + product.name + '</p>'
-      + '<p>Precio: $' + fmtMoney(product.price) + '</p>'
-      + '<p>Cantidad: ' + product.quantity + '</p>'
-      + '<button onclick="deleteProduct(\'' + product.code + '\')">Eliminar</button>'
-      + '<button onclick="editProduct(\'' + product.code + '\')">Editar</button>';
+      + '<p>Nombre: ' + productSafe.name + '</p>'
+      + '<p>Precio: $' + fmtMoney(productSafe.price) + '</p>'
+      + '<p>Cantidad: ' + productSafe.quantity + '</p>'
+      + (productSafe._invalid
+          ? '<p style="color:#c00;font-weight:bold;">⚠ Corregir precios: ' + productSafe._invalid_reasons.join(' | ') + '</p>'
+          : '')
+      + '<button onclick="deleteProduct(\'' + productSafe.code + '\')">Eliminar</button>'
+      + '<button onclick="editProduct(\'' + productSafe.code + '\')">Editar</button>';
   } else {
     resultDiv.innerHTML = '<p>Producto no encontrado</p>';
   }
@@ -126,13 +181,47 @@ function displayProducts() {
   if (!productsList) return;
   productsList.innerHTML = '';
 
-  products.forEach(function(product){
+  products.forEach(function(raw){
+    var product = withValidity(raw); // recalcula por si vinieron de import
+
     var li = document.createElement('li');
-    li.innerHTML = ''
-      + '<span>' + product.code + ' - ' + product.name + ' - $' + fmtMoney(product.price) + ' - Cantidad: ' + product.quantity + '</span>'
-      + '<button onclick="deleteProduct(\'' + product.code + '\')">Eliminar</button>'
-      + '<button onclick="editProduct(\'' + product.code + '\')">Editar</button>'
-      + '<button onclick="updateProduct(\'' + product.code + '\')">Actualizar</button>';
+    li.style.position = 'relative';
+
+    var line = '<span>' + product.code + ' - ' + product.name +
+               ' - $' + fmtMoney(product.price) +
+               ' - Cantidad: ' + (product.isBulk ? fmtQty(product.quantity) : product.quantity) + '</span>';
+
+    // Botones CRUD
+    line += ' <button onclick="deleteProduct(\'' + product.code + '\')">Eliminar</button>';
+    line += ' <button onclick="editProduct(\'' + product.code + '\')">Editar</button>';
+    line += ' <button onclick="updateProduct(\'' + product.code + '\')">Actualizar</button>';
+
+    // Añadir al carrito (bloqueado si inválido)
+    if (product._invalid) {
+      line += ' <button disabled title="Corregí precios antes de vender">Añadir</button>';
+    } else {
+      line += ' <button onclick="addToCart(getByCode(\'' + product.code + '\'))">Añadir</button>';
+    }
+
+    li.innerHTML = line;
+
+    // Badge/alerta
+    if (product._invalid) {
+      var badge = document.createElement('div');
+      badge.textContent = '⚠ Corregir precios';
+      badge.title = product._invalid_reasons.join(' | ');
+      badge.style.position = 'absolute';
+      badge.style.top = '-6px';
+      badge.style.right = '-6px';
+      badge.style.background = '#e02424';
+      badge.style.color = '#fff';
+      badge.style.fontSize = '11px';
+      badge.style.padding = '3px 6px';
+      badge.style.borderRadius = '6px';
+      badge.style.boxShadow = '0 1px 3px rgba(0,0,0,0.2)';
+      li.appendChild(badge);
+    }
+
     productsList.appendChild(li);
   });
 }
@@ -145,6 +234,9 @@ function updateProduct(code) {
     var quantityNumber = parseFloat(newQuantity);
     if (!isNaN(quantityNumber) && quantityNumber >= 0) {
       product.quantity = quantityNumber;
+      // re-marcar validez por si tocaron algo externo
+      var idx = products.findIndex(p => p.code === code);
+      products[idx] = withValidity(product);
       saveProducts(products);
       displayProducts();
       updateTotalPrice();
@@ -165,10 +257,12 @@ function deleteProduct(code) {
 function editProduct(code) {
   var product = getProducts().find(p => p.code === code);
   if (product) {
+    // Cargamos TODOS los campos (no borramos aún el producto)
     document.getElementById('product-code').value = product.code;
     document.getElementById('product-name').value = product.name;
-    document.getElementById('product-price').value = product.price;
-    deleteProduct(code);
+    document.getElementById('product-price').value = _num(product.price, 0);
+    document.getElementById('product-quantity').value = _num(product.quantity, 0);
+    document.getElementById('product-cost').value = _num(product.cost, 0);
   }
 }
 
@@ -176,6 +270,15 @@ function editProduct(code) {
  * CARRITO
  **********************/
 function addToCart(product) {
+  if (!product) return;
+
+  // Bloqueo por producto inválido
+  var v = validateProduct(product);
+  if (!v.ok || product._invalid) {
+    alert('No se puede vender este producto hasta corregir:\n- ' + (product._invalid_reasons || v.reasons).join('\n- '));
+    return;
+  }
+
   var cartList = document.getElementById('cart');
   var existingItem = Array.from(cartList.children).find(item => item.dataset.code === product.code);
 
@@ -250,6 +353,14 @@ function scanProduct() {
     return;
   }
 
+  // Bloqueo al escanear si es inválido
+  var v = validateProduct(product);
+  if (!v.ok || product._invalid) {
+    alert('Producto inválido. Corregir antes de vender:\n- ' + (product._invalid_reasons || v.reasons).join('\n- '));
+    codeInp.value = '';
+    return;
+  }
+
   var cartList = document.getElementById('cart');
   var existingItem = Array.from(cartList.children).find(item => item.dataset.code === product.code);
 
@@ -261,7 +372,7 @@ function scanProduct() {
     if (product.isBulk) {
       var add = prompt('Cantidad adicional en ' + product.unit + ' para "' + product.name + '" (ej: 0.300):');
       var parsed = parseFloat(add);
-      if (isNaN(parsed) || parsed <= 0) return;
+      if (isNaN(parsed) || parsed <= 0) { codeInp.value=''; return; }
       var newQty = currentQty + parsed;
       qEl.textContent = fmtQty(newQty);
       pEl.textContent = fmtMoney(newQty * product.price);
@@ -277,7 +388,7 @@ function scanProduct() {
     return;
   }
 
-  // si no existía: agregar normalmente
+  // si no existía: agregar normalmente (ya validado)
   addToCart(product);
   codeInp.value = '';
   updateTotalPrice();
@@ -477,6 +588,14 @@ function finalizeSale(method) {
 
     if (product.quantity < quantity) {
       alert('No hay suficiente stock de ' + product.name);
+      hasStockIssue = true;
+      return;
+    }
+
+    // Revalidar por si alguien modificó localStorage a mano
+    var v = validateProduct(product);
+    if (!v.ok || product._invalid) {
+      alert('No se puede finalizar venta: producto inválido (' + product.name + '). Motivos:\n- ' + (product._invalid_reasons || v.reasons).join('\n- '));
       hasStockIssue = true;
       return;
     }
@@ -737,12 +856,16 @@ function parseProducts(contents) {
       return null;
     }
     var code = parts[0], name = parts[1], price = parts[2], quantity = parts[3];
-    return {
+    var obj = {
       code: (code || '').trim(),
       name: (name || '').trim(),
       price: parseFloat((price || '').trim()),
-      quantity: parseFloat((quantity || '').trim())
+      quantity: parseFloat((quantity || '').trim()),
+      cost: 0,          // default si import no trae costo
+      unit: '',         // default
+      isBulk: false     // default
     };
+    return withValidity(obj);
   }).filter(function(p){ return !!p; });
   return products;
 }
