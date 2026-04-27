@@ -1,6 +1,55 @@
 /**********************
- * CONFIG
+ * LICENCIA / ACTIVACIÓN
  **********************/
+(function(){
+
+  // Clave ofuscada (Mn232323Mn)
+  const _k = ['TW4y','MzIz','MjNN','bg=='].join('');
+  const CLAVE_REAL = atob(_k);
+
+  function pedirClave() {
+    let input = prompt('Ingrese la clave de activación:');
+
+    if (!input) return false;
+
+    if (input === CLAVE_REAL) {
+      localStorage.setItem('lic_ok', '1');
+      alert('✅ Sistema activado correctamente');
+      return true;
+    } else {
+      alert('❌ Clave incorrecta');
+      return false;
+    }
+  }
+
+  function bloquearSistema() {
+    document.body.innerHTML = `
+      <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;text-align:center;">
+        <h2>🔒 Sistema no activado</h2>
+        <p>Contacte al proveedor para obtener la clave</p>
+
+        <a href="https://wa.me/542617048835?text=Hola%20necesito%20activar%20el%20sistema"
+           target="_blank"
+           style="margin-top:20px;padding:12px 20px;background:#25D366;color:white;text-decoration:none;border-radius:8px;font-size:18px;">
+           💬 WhatsApp
+        </a>
+      </div>
+    `;
+  }
+
+  const activado = localStorage.getItem('lic_ok');
+
+  if (!activado) {
+    const ok = pedirClave();
+    if (!ok) {
+      bloquearSistema();
+      throw new Error('Sistema bloqueado');
+    }
+  }
+
+})();
+
+
 const BULK_STEP = 0.100;  // paso para kg/litro
 const QTY_DEC   = 3;
 const MONEY_DEC = 2;
@@ -969,3 +1018,37 @@ document.addEventListener('click', function(e){
     if (ventasModal) ventasModal.style.display = 'none';
   }
 });
+
+
+/**********************
+ * BOTÓN FLOTANTE WHATSAPP
+ **********************/
+(function(){
+  const btn = document.createElement('a');
+
+  btn.href = 'https://wa.me/542617048835?text=Hola%20tengo%20una%20consulta%20del%20POS';
+  btn.target = '_blank';
+  btn.innerHTML = '💬';
+
+  Object.assign(btn.style, {
+    position: 'fixed',
+    bottom: '20px',
+    right: '20px',
+    width: '60px',
+    height: '60px',
+    background: '#25D366',
+    color: '#fff',
+    fontSize: '30px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '50%',
+    boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+    zIndex: '9999',
+    textDecoration: 'none'
+  });
+
+  document.addEventListener('DOMContentLoaded', function(){
+    document.body.appendChild(btn);
+  });
+})();
