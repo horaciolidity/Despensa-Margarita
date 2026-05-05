@@ -898,27 +898,37 @@ function processFileContents(contents) {
 
 function parseProducts(contents) {
   var lines = contents.split('\n');
+
   var products = lines.map(function(line){
     var parts = line.split(',');
-    if (parts.length !== 4) {
+
+    // ✅ Soporta archivos viejos (4 columnas) y nuevos (5 columnas)
+    if (parts.length < 4) {
       console.error('Formato de producto inválido:', line);
       return null;
     }
-    var code = parts[0], name = parts[1], price = parts[2], quantity = parts[3];
+
+    var code     = parts[0];
+    var name     = parts[1];
+    var price    = parts[2];
+    var quantity = parts[3];
+    var cost     = parts[4]; // 👈 puede venir o no
+
     var obj = {
       code: (code || '').trim(),
       name: (name || '').trim(),
       price: parseFloat((price || '').trim()),
       quantity: parseFloat((quantity || '').trim()),
-      cost: 0,          // default si import no trae costo
-      unit: '',         // default
-      isBulk: false     // default
+      cost: parseFloat((cost || '0').trim()), // ✅ FIX CLAVE
+      unit: '',
+      isBulk: false
     };
+
     return withValidity(obj);
   }).filter(function(p){ return !!p; });
+
   return products;
 }
-
 function saveProductsToLocalStorage(products) {
   var existingProducts = getProducts();
   var updatedProducts = existingProducts.concat(products);
@@ -932,11 +942,20 @@ function loadProducts() {
 
 function downloadProducts() {
   var products = getProducts();
+
   var contents = products.map(function(p){
-    return p.code + ', ' + p.name + ', ' + p.price + ', ' + p.quantity;
+    return [
+      p.code,
+      p.name,
+      p.price,
+      p.quantity,
+      (p.cost || 0) // ✅ ahora incluye costo
+    ].join(',');
   }).join('\n');
+
   var blob = new Blob([contents], { type: 'text/plain' });
   var url = URL.createObjectURL(blob);
+
   var a = document.createElement('a');
   a.href = url;
   a.download = 'productos.txt';
@@ -944,7 +963,6 @@ function downloadProducts() {
   a.click();
   document.body.removeChild(a);
 }
-
 /**********************
  * LIMPIEZAS
  **********************/
