@@ -202,28 +202,54 @@ function clearForm() {
 }
 
 function searchProduct() {
-  var code = document.getElementById('search-code').value.trim();
-  var product = getProducts().find(p => p.code === code);
+  var query = document.getElementById('search-code').value.trim().toLowerCase();
+  var products = getProducts();
 
   var resultDiv = document.getElementById('product-result');
   resultDiv.innerHTML = '';
 
-  if (product) {
+  if (!query) {
+    resultDiv.innerHTML = '<p>Ingrese un código o nombre</p>';
+    return;
+  }
+
+  // 🔍 Buscar por código exacto o coincidencia en nombre
+  var resultados = products.filter(function(p){
+    return (
+      (p.code && p.code.toLowerCase() === query) ||
+      (p.name && p.name.toLowerCase().includes(query))
+    );
+  });
+
+  if (resultados.length === 0) {
+    resultDiv.innerHTML = '<p>Producto no encontrado</p>';
+    return;
+  }
+
+  // Mostrar resultados (pueden ser varios)
+  resultados.forEach(function(product){
     var productSafe = withValidity(product);
-    resultDiv.innerHTML = ''
-      + '<p>Nombre: ' + productSafe.name + '</p>'
+
+    var div = document.createElement('div');
+    div.style.borderBottom = '1px solid #ccc';
+    div.style.marginBottom = '8px';
+    div.style.paddingBottom = '5px';
+
+    div.innerHTML = ''
+      + '<p><strong>' + productSafe.name + '</strong></p>'
+      + '<p>Código: ' + productSafe.code + '</p>'
       + '<p>Precio: $' + fmtMoney(productSafe.price) + '</p>'
+      + '<p>Costo: $' + fmtMoney(productSafe.cost) + '</p>' // 👈 ahora también ves el costo
       + '<p>Cantidad: ' + productSafe.quantity + '</p>'
       + (productSafe._invalid
-          ? '<p style="color:#c00;font-weight:bold;">⚠ Corregir precios: ' + productSafe._invalid_reasons.join(' | ') + '</p>'
+          ? '<p style="color:#c00;font-weight:bold;">⚠ ' + productSafe._invalid_reasons.join(' | ') + '</p>'
           : '')
-      + '<button onclick="deleteProduct(\'' + productSafe.code + '\')">Eliminar</button>'
+      + '<button onclick="deleteProduct(\'' + productSafe.code + '\')">Eliminar</button> '
       + '<button onclick="editProduct(\'' + productSafe.code + '\')">Editar</button>';
-  } else {
-    resultDiv.innerHTML = '<p>Producto no encontrado</p>';
-  }
-}
 
+    resultDiv.appendChild(div);
+  });
+}
 function displayProducts() {
   var products = getProducts();
   var productsList = document.getElementById('products');
