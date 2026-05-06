@@ -221,7 +221,6 @@ function searchProductLive(query) {
     return;
   }
 
-  // 🔥 tamaño dinámico
   var fontSize = resultados.length > 10 ? '11px'
                : resultados.length > 5  ? '13px'
                : '15px';
@@ -233,7 +232,6 @@ function searchProductLive(query) {
     div.className = 'search-item';
     div.style.fontSize = fontSize;
 
-    // 🔥 destacar coincidencia
     function highlight(text) {
       if (!text) return '';
       return text.replace(new RegExp('(' + query + ')', 'gi'), '<mark>$1</mark>');
@@ -247,32 +245,21 @@ function searchProductLive(query) {
       <div class="search-sub">
         Cod: ${highlight(product.code)} | Stock: ${product.quantity}
       </div>
+      ${product._invalid ? `<div style="color:#c00;font-size:11px;">⚠ ${product._invalid_reasons.join(' | ')}</div>` : ''}
     `;
 
-    // 👉 click = seleccionar
+    // 👉 CLICK SOLO MUESTRA (NO AGREGA)
     div.onclick = function() {
-      resultDiv.innerHTML = '';
       document.getElementById('search-code').value = product.name;
 
-      addToCart(getByCode(product.code));
+      // dejar SOLO este producto visible
+      resultDiv.innerHTML = '';
+      resultDiv.appendChild(div);
     };
 
     resultDiv.appendChild(div);
   });
-
-  // 🎯 AUTOSELECCIÓN SI ES EXACTO
-  var exacto = resultados.find(p =>
-    p.code.toLowerCase() === query ||
-    p.name.toLowerCase() === query
-  );
-
-  if (exacto) {
-    resultDiv.innerHTML = '';
-    addToCart(getByCode(exacto.code));
-    document.getElementById('search-code').value = '';
-  }
 }
-
 function displayProducts() {
   var products = getProducts();
   var productsList = document.getElementById('products');
