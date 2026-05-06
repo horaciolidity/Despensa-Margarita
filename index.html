@@ -37,8 +37,7 @@
 
         <input type="text" id="product-code" placeholder="Código de Barras">
         <input type="text" id="product-name" placeholder="Nombre del Producto">
-        <input type="number" id="product-price" placeholder="Precio">
-
+        <input type="number" step="0.01" id="product-price" placeholder="Precio">
         <input type="number" step="0.01" id="product-cost" placeholder="Costo">
 
         <select id="product-unit">
@@ -47,8 +46,7 @@
             <option value="litro">Litro</option>
         </select>
 
-        <input type="number" id="product-quantity" placeholder="Cantidad" min="1">
-
+        <input type="number" step="0.001" id="product-quantity" placeholder="Cantidad" min="0">
         <button onclick="addProduct()">Agregar</button>
     </section>
 
@@ -99,7 +97,7 @@
   <!-- 🔥 AHORA NO QUEDA ABAJO -->
   <div class="file-actions">
     <input type="file" id="fileInput" accept=".txt">
-    <button onclick="loadProducts()">Cargar</button>
+    <button onclick="displayProducts()">Refrescar</button>
     <button onclick="downloadProducts()">Descargar</button>
   </div>
 </section>
