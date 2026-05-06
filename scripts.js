@@ -209,7 +209,6 @@ function searchProductLive(query) {
 
   var products = getProducts();
 
-  // buscar coincidencias
   var resultados = products.filter(function(p){
     return (
       (p.code && p.code.toLowerCase().includes(query)) ||
@@ -218,36 +217,61 @@ function searchProductLive(query) {
   });
 
   if (resultados.length === 0) {
-    resultDiv.innerHTML = '<p>Producto no encontrado</p>';
+    resultDiv.innerHTML = '<p style="color:#999;">Sin resultados</p>';
     return;
   }
 
-  // 🔥 SOLO EL PRIMER RESULTADO
-  var product = withValidity(resultados[0]);
+  // 🔥 tamaño dinámico
+  var fontSize = resultados.length > 10 ? '11px'
+               : resultados.length > 5  ? '13px'
+               : '15px';
 
-  var div = document.createElement('div');
-  div.style.border = '1px solid #ddd';
-  div.style.borderRadius = '10px';
-  div.style.padding = '10px';
-  div.style.marginTop = '10px';
-  div.style.background = '#fff';
+  resultados.forEach(function(productRaw){
+    var product = withValidity(productRaw);
 
-  div.innerHTML = ''
-    + '<p><strong>' + product.name + '</strong></p>'
-    + '<p>Código: ' + product.code + '</p>'
-    + '<p>Precio: $' + fmtMoney(product.price) + '</p>'
-    + '<p>Costo: $' + fmtMoney(product.cost) + '</p>'
-    + '<p>Stock: ' + product.quantity + '</p>'
-    + (product._invalid
-        ? '<p style="color:#c00;">⚠ ' + product._invalid_reasons.join(' | ') + '</p>'
-        : '')
-    + '<button onclick="addToCart(getByCode(\'' + product.code + '\'))">Añadir</button>'
-    + '<button onclick="editProduct(\'' + product.code + '\')">Editar</button>'
-    + '<button onclick="deleteProduct(\'' + product.code + '\')">Eliminar</button>';
+    var div = document.createElement('div');
+    div.className = 'search-item';
+    div.style.fontSize = fontSize;
 
-  resultDiv.appendChild(div);
+    // 🔥 destacar coincidencia
+    function highlight(text) {
+      if (!text) return '';
+      return text.replace(new RegExp('(' + query + ')', 'gi'), '<mark>$1</mark>');
+    }
+
+    div.innerHTML = `
+      <div class="search-line">
+        <strong>${highlight(product.name)}</strong>
+        <span>$${fmtMoney(product.price)}</span>
+      </div>
+      <div class="search-sub">
+        Cod: ${highlight(product.code)} | Stock: ${product.quantity}
+      </div>
+    `;
+
+    // 👉 click = seleccionar
+    div.onclick = function() {
+      resultDiv.innerHTML = '';
+      document.getElementById('search-code').value = product.name;
+
+      addToCart(getByCode(product.code));
+    };
+
+    resultDiv.appendChild(div);
+  });
+
+  // 🎯 AUTOSELECCIÓN SI ES EXACTO
+  var exacto = resultados.find(p =>
+    p.code.toLowerCase() === query ||
+    p.name.toLowerCase() === query
+  );
+
+  if (exacto) {
+    resultDiv.innerHTML = '';
+    addToCart(getByCode(exacto.code));
+    document.getElementById('search-code').value = '';
+  }
 }
-
 
 function displayProducts() {
   var products = getProducts();
