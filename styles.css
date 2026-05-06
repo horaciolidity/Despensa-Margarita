@@ -26,7 +26,7 @@ body {
 
 .header img {
   width: 100%;
-  height: 120px; /* 🔥 CONTROL DEL BANNER */
+  height: 100px; /* 🔥 MÁS PROPORCIONADO */
   object-fit: cover;
   opacity: 0.25;
   border-radius: 12px;
@@ -38,7 +38,7 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   margin: 0;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   z-index: 2;
 }
 
@@ -89,14 +89,6 @@ button:hover {
   opacity: 0.9;
 }
 
-.btn-success {
-  background: var(--success);
-}
-
-.btn-danger {
-  background: var(--danger);
-}
-
 /* ====== CHECKOUT ====== */
 .checkout {
   display: flex;
@@ -117,15 +109,15 @@ button:hover {
   color: var(--success);
 }
 
-/* ====== INVENTARIO SCROLL ====== */
+/* ====== INVENTARIO ====== */
 #product-list {
   display: flex;
   flex-direction: column;
 }
 
-/* 🔥 CLAVE */
+/* 🔥 SCROLL CONTROLADO */
 #products {
-  max-height: 300px; /* límite visible */
+  max-height: 280px;
   overflow-y: auto;
   padding-right: 5px;
 }
@@ -139,24 +131,60 @@ button:hover {
   border-radius: 10px;
 }
 
-/* ITEMS */
+/* 🔥 ITEMS MEJORADOS */
 #products li {
   background: #020617;
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 6px;
-  display: flex;
-  justify-content: space-between;
+
+  display: grid;
+  grid-template-columns: 1fr auto auto auto auto;
+  gap: 8px;
   align-items: center;
 }
 
-/* ====== ARCHIVOS (sube botones) ====== */
+/* TEXTO PRODUCTO */
+#products li span {
+  font-size: 14px;
+}
+
+/* BOTONES MÁS LIMPIOS */
+#products li button {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
+/* COLORES */
+#products li button:nth-child(2) { background: var(--danger); }
+#products li button:nth-child(3) { background: #0ea5e9; }
+#products li button:nth-child(4) { background: #22c55e; }
+#products li button:nth-child(5) { background: #a855f7; }
+
+/* ====== ARCHIVOS ====== */
 .file-actions {
   position: sticky;
   bottom: 0;
   background: var(--card);
   padding-top: 10px;
+  margin-top: 10px;
+}
+
+/* ====== MODAL VUELTO (FIX 🔥) ====== */
+.cash-modal-backdrop {
+  display: none !important;
+  position: fixed;
+  inset: 0;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.6);
+  z-index: 9999;
+}
+
+.cash-modal-backdrop.show {
+  display: flex !important;
 }
 
 /* ====== LOADING ====== */
