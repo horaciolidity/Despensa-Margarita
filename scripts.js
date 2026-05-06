@@ -201,22 +201,18 @@ function clearForm() {
   document.getElementById('product-cost').value = '';
 }
 
-function searchProduct() {
-  var query = document.getElementById('search-code').value.trim().toLowerCase();
-  var products = getProducts();
-
+function searchProductLive(query) {
   var resultDiv = document.getElementById('product-result');
   resultDiv.innerHTML = '';
 
-  if (!query) {
-    resultDiv.innerHTML = '<p>Ingrese un código o nombre</p>';
-    return;
-  }
+  if (!query) return;
 
-  // 🔍 Buscar por código exacto o coincidencia en nombre
+  var products = getProducts();
+
+  // buscar coincidencias
   var resultados = products.filter(function(p){
     return (
-      (p.code && p.code.toLowerCase() === query) ||
+      (p.code && p.code.toLowerCase().includes(query)) ||
       (p.name && p.name.toLowerCase().includes(query))
     );
   });
@@ -226,30 +222,33 @@ function searchProduct() {
     return;
   }
 
-  // Mostrar resultados (pueden ser varios)
-  resultados.forEach(function(product){
-    var productSafe = withValidity(product);
+  // 🔥 SOLO EL PRIMER RESULTADO
+  var product = withValidity(resultados[0]);
 
-    var div = document.createElement('div');
-    div.style.borderBottom = '1px solid #ccc';
-    div.style.marginBottom = '8px';
-    div.style.paddingBottom = '5px';
+  var div = document.createElement('div');
+  div.style.border = '1px solid #ddd';
+  div.style.borderRadius = '10px';
+  div.style.padding = '10px';
+  div.style.marginTop = '10px';
+  div.style.background = '#fff';
 
-    div.innerHTML = ''
-      + '<p><strong>' + productSafe.name + '</strong></p>'
-      + '<p>Código: ' + productSafe.code + '</p>'
-      + '<p>Precio: $' + fmtMoney(productSafe.price) + '</p>'
-      + '<p>Costo: $' + fmtMoney(productSafe.cost) + '</p>' // 👈 ahora también ves el costo
-      + '<p>Cantidad: ' + productSafe.quantity + '</p>'
-      + (productSafe._invalid
-          ? '<p style="color:#c00;font-weight:bold;">⚠ ' + productSafe._invalid_reasons.join(' | ') + '</p>'
-          : '')
-      + '<button onclick="deleteProduct(\'' + productSafe.code + '\')">Eliminar</button> '
-      + '<button onclick="editProduct(\'' + productSafe.code + '\')">Editar</button>';
+  div.innerHTML = ''
+    + '<p><strong>' + product.name + '</strong></p>'
+    + '<p>Código: ' + product.code + '</p>'
+    + '<p>Precio: $' + fmtMoney(product.price) + '</p>'
+    + '<p>Costo: $' + fmtMoney(product.cost) + '</p>'
+    + '<p>Stock: ' + product.quantity + '</p>'
+    + (product._invalid
+        ? '<p style="color:#c00;">⚠ ' + product._invalid_reasons.join(' | ') + '</p>'
+        : '')
+    + '<button onclick="addToCart(getByCode(\'' + product.code + '\'))">Añadir</button>'
+    + '<button onclick="editProduct(\'' + product.code + '\')">Editar</button>'
+    + '<button onclick="deleteProduct(\'' + product.code + '\')">Eliminar</button>';
 
-    resultDiv.appendChild(div);
-  });
+  resultDiv.appendChild(div);
 }
+
+
 function displayProducts() {
   var products = getProducts();
   var productsList = document.getElementById('products');
@@ -1238,4 +1237,8 @@ searchInput.addEventListener("input", function() {
     const text = li.innerText.toLowerCase();
     li.style.display = text.includes(value) ? "grid" : "none";
   });
+});
+document.getElementById('search-code').addEventListener('input', function() {
+  var value = this.value.trim().toLowerCase();
+  searchProductLive(value);
 });
