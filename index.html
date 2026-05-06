@@ -112,29 +112,39 @@
 <!-- MODAL VUELTO -->
 <div id="cash-change-modal" class="cash-modal-backdrop">
   <div class="cash-modal">
+
     <button class="cash-modal-close">&times;</button>
 
-    <h2>Vuelto</h2>
-
-    <div class="cash-modal-amount">
-      <strong id="ccm-vuelto">$0,00</strong>
+    <div class="cash-header">
+      <h2>💰 Vuelto</h2>
     </div>
 
-    <div class="cash-modal-breakdown">
-      <div class="row">
+    <!-- MONTO PRINCIPAL -->
+    <div class="cash-main-amount">
+      $<span id="ccm-vuelto">0.00</span>
+    </div>
+
+    <!-- INFO SECUNDARIA -->
+    <div class="cash-details">
+
+      <div class="cash-row">
         <span>Total</span>
-        <span id="ccm-total">$0,00</span>
+        <span id="ccm-total">$0.00</span>
       </div>
-      <div class="row">
-        <span>Pagó</span>
-        <span id="ccm-pagocon">$0,00</span>
+
+      <div class="cash-row">
+        <span>Pagó con</span>
+        <span id="ccm-pagocon">$0.00</span>
       </div>
+
     </div>
 
-    <div class="cash-modal-actions">
-      <button id="ccm-print">Imprimir</button>
-      <button id="ccm-ok">Listo</button>
+    <!-- BOTONES -->
+    <div class="cash-actions">
+      <button id="ccm-print" class="btn-secondary">🖨 Imprimir</button>
+      <button id="ccm-ok" class="btn-primary">✔ Listo</button>
     </div>
+
   </div>
 </div>
 <div id="ventas-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999;">
