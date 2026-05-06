@@ -209,3 +209,33 @@ button:hover {
 @keyframes spin {
   100% { transform: rotate(360deg); }
 }
+/* ====== EFECTO AL AGREGAR PRODUCTO ====== */
+#cart li {
+  animation: popIn 0.2s ease;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ====== CARRITO SCROLL ====== */
+#cart {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+/* ====== HOVER PRODUCTOS ====== */
+#products li:hover {
+  background: #020617;
+  border-color: #334155;
+}
+
+/* ====== BUSCADOR INVENTARIO ====== */
+#product-list input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #1e293b;
+  background: #020617;
+  color: white;
+}
