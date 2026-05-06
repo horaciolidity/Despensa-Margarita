@@ -1096,3 +1096,63 @@ document.addEventListener('click', function(e){
     document.body.appendChild(btn);
   });
 })();
+// ====== AUTOFOCUS ESCÁNER ======
+function focusScanner() {
+  const scanInput = document.getElementById("scan-code");
+  if (scanInput) scanInput.focus();
+}
+
+// cada vez que carga
+window.addEventListener("load", focusScanner);
+
+// después de cada acción importante
+document.addEventListener("click", focusScanner);
+
+// ====== ENTER PARA ESCANEAR ======
+document.getElementById("scan-code")?.addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    scanProduct();
+    setTimeout(focusScanner, 100);
+  }
+});
+
+// ====== SONIDO (CAJA REGISTRADORA SIMPLE) ======
+function playBeep() {
+  const audio = new Audio("https://www.soundjay.com/buttons/sounds/button-16.mp3");
+  audio.volume = 0.3;
+  audio.play();
+}
+
+// enganchar al agregar producto
+const originalScan = window.scanProduct;
+window.scanProduct = function() {
+  originalScan();
+  playBeep();
+  scrollCart();
+};
+
+// ====== AUTO SCROLL CARRITO ======
+function scrollCart() {
+  const cart = document.getElementById("cart");
+  cart.scrollTop = cart.scrollHeight;
+}
+
+// ====== BUSCADOR INVENTARIO EN VIVO ======
+const searchInput = document.createElement("input");
+searchInput.placeholder = "Buscar en inventario...";
+searchInput.style.marginBottom = "10px";
+
+const productList = document.getElementById("product-list");
+if (productList) {
+  productList.prepend(searchInput);
+}
+
+searchInput.addEventListener("input", function() {
+  const value = this.value.toLowerCase();
+  const items = document.querySelectorAll("#products li");
+
+  items.forEach(li => {
+    const text = li.innerText.toLowerCase();
+    li.style.display = text.includes(value) ? "grid" : "none";
+  });
+});
