@@ -239,3 +239,61 @@ button:hover {
   background: #020617;
   color: white;
 }
+/* ====== BOTONES PRO ====== */
+
+/* Cargar */
+.btn-load {
+  background: #22c55e; /* verde */
+}
+.btn-load:hover {
+  background: #16a34a;
+}
+
+/* Descargar */
+.btn-download {
+  background: #3b82f6; /* azul */
+}
+.btn-download:hover {
+  background: #2563eb;
+}
+
+/* Efectivo */
+button[onclick*="efectivo"] {
+  background: #22c55e;
+}
+
+/* Transferencia */
+button[onclick*="transferencia"] {
+  background: #0ea5e9;
+}
+
+/* Consultar */
+button[onclick*="consultar"] {
+  background: #6366f1;
+}
+
+/* Limpiar */
+button[onclick*="limpiar"] {
+  background: #ef4444;
+}
+
+/* Agregar producto */
+button[onclick*="addProduct"] {
+  background: #22c55e;
+}
+
+/* Buscar */
+button[onclick*="searchProduct"] {
+  background: #f59e0b;
+}
+
+/* Escanear */
+button[onclick*="scanProduct"] {
+  background: #06b6d4;
+}
+
+/* HOVER GLOBAL MEJORADO */
+button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
