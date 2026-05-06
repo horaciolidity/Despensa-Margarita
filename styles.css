@@ -417,3 +417,45 @@ button:hover {
 .btn-secondary:hover {
   background: #d1d5db;
 }
+#product-result {
+  margin-top: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+/* ITEM */
+.search-item {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  color: #111; /* 🔥 texto oscuro */
+  background: #fff;
+  transition: 0.2s;
+}
+
+.search-item:hover {
+  background: #f3f4f6;
+}
+
+/* LÍNEA PRINCIPAL */
+.search-line {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+/* SUB INFO */
+.search-sub {
+  font-size: 12px;
+  color: #666;
+}
+
+/* DESTACADO */
+mark {
+  background: #fde68a;
+  padding: 1px 3px;
+  border-radius: 3px;
+}
