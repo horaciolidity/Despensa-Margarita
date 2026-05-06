@@ -297,3 +297,123 @@ button:hover {
   transform: translateY(-1px);
   filter: brightness(1.1);
 }
+/* BACKDROP */
+.cash-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.cash-modal-backdrop.show {
+  display: flex;
+}
+
+/* MODAL */
+.cash-modal {
+  background: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 420px;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  position: relative;
+  animation: fadeInScale 0.25s ease;
+}
+
+/* ANIMACIÓN */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* BOTÓN CERRAR */
+.cash-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  font-size: 22px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* HEADER */
+.cash-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #333;
+}
+
+/* 💰 MONTO GRANDE */
+.cash-main-amount {
+  font-size: 60px;
+  font-weight: 800;
+  color: #16a34a;
+  margin: 20px 0;
+  letter-spacing: 1px;
+}
+
+/* DETALLES */
+.cash-details {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.cash-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  margin: 8px 0;
+  color: #444;
+}
+
+/* BOTONES */
+.cash-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.cash-actions button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* ESTILOS BOTONES */
+.btn-primary {
+  background: #16a34a;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #15803d;
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+}
+
+.btn-secondary:hover {
+  background: #d1d5db;
+}
