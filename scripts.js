@@ -1106,8 +1106,22 @@ function focusScanner() {
 window.addEventListener("load", focusScanner);
 
 // después de cada acción importante
-document.addEventListener("click", focusScanner);
+// ====== AUTOFOCUS INTELIGENTE ======
+function focusScanner() {
+  const scanInput = document.getElementById("scan-code");
+  if (scanInput) scanInput.focus();
+}
 
+// SOLO cuando carga la página
+window.addEventListener("load", focusScanner);
+
+// SOLO después de escanear
+document.getElementById("scan-code")?.addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    scanProduct();
+    setTimeout(focusScanner, 100);
+  }
+});
 // ====== ENTER PARA ESCANEAR ======
 document.getElementById("scan-code")?.addEventListener("keypress", function(e) {
   if (e.key === "Enter") {
