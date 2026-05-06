@@ -17,10 +17,10 @@
 <div class="container">
 
     <!-- HEADER -->
-    <header class="header">
-        <h1>DESPENSA MARGARITA</h1>
-        <img src="https://despensa-margarita.vercel.app/photo_4958725565448302119_y.jpg" alt="">
-    </header>
+   <header class="header">
+  <img src="https://despensa-margarita.vercel.app/photo_4958725565448302119_y.jpg">
+  <h1>DESPENSA MARGARITA</h1>
+</header>
 
     <!-- APERTURA -->
     <section class="card">
@@ -91,11 +91,18 @@
     </section>
 
     <!-- PRODUCTOS -->
-    <section id="product-list" class="card">
-        <h2>Inventario</h2>
-        <ul id="products"></ul>
-    </section>
+  <section id="product-list" class="card">
+  <h2>Inventario</h2>
 
+  <ul id="products"></ul>
+
+  <!-- 🔥 AHORA NO QUEDA ABAJO -->
+  <div class="file-actions">
+    <input type="file" id="fileInput" accept=".txt">
+    <button onclick="loadProducts()">Cargar</button>
+    <button onclick="downloadProducts()">Descargar</button>
+  </div>
+</section>
     <!-- ARCHIVOS -->
     <section class="card center">
         <input type="file" id="fileInput" accept=".txt">
