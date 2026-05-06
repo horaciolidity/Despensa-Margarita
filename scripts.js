@@ -992,11 +992,22 @@ function downloadProducts() {
 /**********************
  * LIMPIEZAS
  **********************/
-function getVentas() {
-  return JSON.parse(localStorage.getItem('ventas')) || [];
+function getSales() {
+  // Compatibilidad: si existen "ventas", las migramos
+  var old = JSON.parse(localStorage.getItem('ventas')) || [];
+  var current = JSON.parse(localStorage.getItem('sales')) || [];
+
+  if (old.length && current.length === 0) {
+    localStorage.setItem('sales', JSON.stringify(old));
+    localStorage.removeItem('ventas');
+    return old;
+  }
+
+  return current;
 }
-function saveVentas(ventas) {
-  localStorage.setItem('ventas', JSON.stringify(ventas));
+
+function saveSales(sales) {
+  localStorage.setItem('sales', JSON.stringify(sales));
 }
 
 // Verificar stock bajo
@@ -1008,8 +1019,7 @@ function checkStock(product) {
 
 function limpiarTotalVendido() {
   localStorage.removeItem('totalVendido');
-  localStorage.removeItem('ventas');
-  localStorage.removeItem('openingCash');
+  localStorage.removeItem('sales'); // 🔥 corregido  localStorage.removeItem('openingCash');
   localStorage.setItem('openingCashSet', 'false');
 
   var products = getProducts();
