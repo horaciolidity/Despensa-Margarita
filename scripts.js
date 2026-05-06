@@ -957,9 +957,68 @@ function parseProducts(contents) {
 }
 function saveProductsToLocalStorage(products) {
   var existingProducts = getProducts();
-  var updatedProducts = existingProducts.concat(products);
-  saveProducts(updatedProducts);
+
+  var agregados = [];
+  var actualizados = [];
+  var errores = [];
+
+  products.forEach(function(newProd) {
+
+    // validar básico
+    if (!newProd.code || !newProd.name) {
+      errores.push('Producto inválido (sin código o nombre)');
+      return;
+    }
+
+    var index = existingProducts.findIndex(p => p.code === newProd.code);
+
+    if (index !== -1) {
+      // 🔄 ACTUALIZAR
+      var prev = existingProducts[index];
+
+      var actualizado = {
+        code: newProd.code,
+        name: newProd.name || prev.name,
+        price: !isNaN(newProd.price) ? newProd.price : prev.price,
+        cost: !isNaN(newProd.cost) ? newProd.cost : (prev.cost || 0),
+        quantity: !isNaN(newProd.quantity) ? newProd.quantity : prev.quantity,
+        unit: newProd.unit || prev.unit || 'unidad',
+        isBulk: newProd.isBulk != null ? newProd.isBulk : prev.isBulk
+      };
+
+      existingProducts[index] = withValidity(actualizado);
+      actualizados.push(newProd.code + ' - ' + actualizado.name);
+
+    } else {
+      // ➕ NUEVO
+      existingProducts.push(withValidity(newProd));
+      agregados.push(newProd.code + ' - ' + newProd.name);
+    }
+  });
+
+  saveProducts(existingProducts);
+
+  // 📊 REPORTE FINAL
+  var msg = '📦 Importación completada\n\n';
+
+  if (agregados.length) {
+    msg += '➕ Agregados (' + agregados.length + '):\n';
+    msg += agregados.slice(0, 5).join('\n') + (agregados.length > 5 ? '\n...' : '') + '\n\n';
+  }
+
+  if (actualizados.length) {
+    msg += '🔄 Actualizados (' + actualizados.length + '):\n';
+    msg += actualizados.slice(0, 5).join('\n') + (actualizados.length > 5 ? '\n...' : '') + '\n\n';
+  }
+
+  if (errores.length) {
+    msg += '⚠ Errores (' + errores.length + '):\n';
+    msg += errores.slice(0, 5).join('\n') + '\n\n';
+  }
+
+  alert(msg);
 }
+
 
 function loadProducts() {
   var products = getProducts();
