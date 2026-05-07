@@ -459,3 +459,23 @@ mark {
   padding: 1px 3px;
   border-radius: 3px;
 }
+.search-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.search-actions button {
+  flex: 1;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.search-actions button:hover {
+  transform: scale(1.03);
+}
