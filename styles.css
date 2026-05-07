@@ -459,23 +459,38 @@ mark {
   padding: 1px 3px;
   border-radius: 3px;
 }
-.search-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 10px;
+.search-actions{
+  display:flex;
+  gap:6px;
+  margin-top:10px;
 }
 
-.search-actions button {
-  flex: 1;
-  border: none;
-  padding: 8px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  transition: 0.2s;
+/* BOTONES GENERALES */
+.search-actions button{
+  border:none;
+  padding:5px 10px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .2s ease;
+  color:white;
 }
 
-.search-actions button:hover {
-  transform: scale(1.03);
+/* EDITAR */
+.search-actions button:first-child{
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  box-shadow:0 2px 6px rgba(37,99,235,.25);
+}
+
+/* ELIMINAR */
+.search-actions button:last-child{
+  background:linear-gradient(135deg,#dc2626,#b91c1c);
+  box-shadow:0 2px 6px rgba(220,38,38,.25);
+}
+
+/* HOVER */
+.search-actions button:hover{
+  transform:translateY(-1px) scale(1.03);
+  opacity:.92;
 }
