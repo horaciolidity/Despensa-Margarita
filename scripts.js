@@ -245,27 +245,35 @@ function searchProductLive(query) {
       return text.replace(new RegExp('(' + query + ')', 'gi'), '<mark>$1</mark>');
     }
 
-    div.innerHTML = `
-      <div class="search-line">
-        <strong>${highlight(product.name)}</strong>
-        <span>$${fmtMoney(product.price)}</span>
-      </div>
-      <div class="search-sub">
-        Cod: ${highlight(product.code)} | Stock: ${product.quantity}
-      </div>
-      ${product._invalid ? `<div style="color:#c00;font-size:11px;">⚠ ${product._invalid_reasons.join(' | ')}</div>` : ''}
-    `;
-    ${product._warning_cost
-  ? `<div style="
-      color:#f59e0b;
-      font-size:11px;
-      font-weight:700;
-      margin-top:4px;
-    ">
-      ⚠ Producto sin costo cargado
-    </div>`
-  : ''
-}
+ div.innerHTML = `
+  <div class="search-line">
+    <strong>${highlight(product.name)}</strong>
+    <span>$${fmtMoney(product.price)}</span>
+  </div>
+
+  <div class="search-sub">
+    Cod: ${highlight(product.code)} | Stock: ${product.quantity}
+  </div>
+
+  ${product._invalid
+    ? `<div style="color:#c00;font-size:11px;">
+         ⚠ ${product._invalid_reasons.join(' | ')}
+       </div>`
+    : ''
+  }
+
+  ${product._warning_cost
+    ? `<div style="
+        color:#f59e0b;
+        font-size:11px;
+        font-weight:700;
+        margin-top:4px;
+      ">
+        ⚠ Producto sin costo cargado
+      </div>`
+    : ''
+  }
+`;
 
     // 👉 CLICK SOLO MUESTRA (NO AGREGA)
    div.onclick = function() {
