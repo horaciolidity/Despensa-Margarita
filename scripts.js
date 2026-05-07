@@ -249,17 +249,39 @@ function searchProductLive(query) {
     `;
 
     // 👉 CLICK SOLO MUESTRA (NO AGREGA)
-    div.onclick = function() {
-      document.getElementById('search-code').value = product.name;
+   div.onclick = function() {
 
-      // dejar SOLO este producto visible
-      resultDiv.innerHTML = '';
-      resultDiv.appendChild(div);
-    };
+  document.getElementById('search-code').value = product.name;
 
-    resultDiv.appendChild(div);
-  });
-}
+  resultDiv.innerHTML = '';
+
+  var selected = document.createElement('div');
+  selected.className = 'search-item';
+  selected.style.fontSize = '15px';
+
+  selected.innerHTML = `
+    <div class="search-line">
+      <strong>${product.name}</strong>
+      <span>$${fmtMoney(product.price)}</span>
+    </div>
+
+    <div class="search-sub">
+      Cod: ${product.code} | Stock: ${product.quantity}
+    </div>
+
+    <div class="search-actions">
+      <button onclick="editProduct('${product.code}')">
+        ✏ Editar
+      </button>
+
+      <button onclick="deleteProduct('${product.code}')">
+        🗑 Eliminar
+      </button>
+    </div>
+  `;
+
+  resultDiv.appendChild(selected);
+};
 function displayProducts() {
   var products = getProducts();
   var productsList = document.getElementById('products');
