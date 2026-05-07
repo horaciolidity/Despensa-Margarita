@@ -280,8 +280,14 @@ function searchProductLive(query) {
     </div>
   `;
 
-  resultDiv.appendChild(selected);
+resultDiv.appendChild(selected);
 };
+
+resultDiv.appendChild(div);
+
+}); // ← cierra el forEach
+
+} // ← cierra searchProductLive
 function displayProducts() {
   var products = getProducts();
   var productsList = document.getElementById('products');
