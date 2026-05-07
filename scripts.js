@@ -89,10 +89,18 @@ function validateProduct(p) {
 
 // Marca el objeto con flags para UI (sin alterar números)
 function withValidity(p) {
+
   var v = validateProduct(p);
+
   var copy = Object.assign({}, p);
+
   copy._invalid = !v.ok;
   copy._invalid_reasons = v.reasons;
+
+  // ⚠ ALERTA SOLO VISUAL
+  copy._warning_cost =
+    Number(p.cost || 0) <= 0;
+
   return copy;
 }
 
@@ -247,6 +255,17 @@ function searchProductLive(query) {
       </div>
       ${product._invalid ? `<div style="color:#c00;font-size:11px;">⚠ ${product._invalid_reasons.join(' | ')}</div>` : ''}
     `;
+    ${product._warning_cost
+  ? `<div style="
+      color:#f59e0b;
+      font-size:11px;
+      font-weight:700;
+      margin-top:4px;
+    ">
+      ⚠ Producto sin costo cargado
+    </div>`
+  : ''
+}
 
     // 👉 CLICK SOLO MUESTRA (NO AGREGA)
    div.onclick = function() {
@@ -317,7 +336,25 @@ function displayProducts() {
     }
 
     li.innerHTML = line;
+// ⚠ ALERTA COSTO 0
+if (product._warning_cost) {
 
+  var warn = document.createElement('div');
+
+  warn.textContent = '⚠ Sin costo cargado';
+
+  warn.style.position = 'absolute';
+  warn.style.bottom = '-8px';
+  warn.style.left = '10px';
+  warn.style.background = '#f59e0b';
+  warn.style.color = '#111';
+  warn.style.fontSize = '10px';
+  warn.style.fontWeight = '700';
+  warn.style.padding = '3px 7px';
+  warn.style.borderRadius = '6px';
+
+  li.appendChild(warn);
+}
     // Badge/alerta
     if (product._invalid) {
       var badge = document.createElement('div');
@@ -384,7 +421,15 @@ function editProduct(code) {
  **********************/
 function addToCart(product) {
   if (!product) return;
+// ⚠ ALERTA SOLO VISUAL
+if (Number(product.cost || 0) <= 0) {
 
+  alert(
+    '⚠ ALERTA\n\n' +
+    'El producto "' + product.name + '"\n' +
+    'no tiene costo cargado.'
+  );
+}
   // Bloqueo por producto inválido
   var v = validateProduct(product);
   if (!v.ok || product._invalid) {
