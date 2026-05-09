@@ -1330,6 +1330,42 @@ searchInput.addEventListener("input", function() {
     li.style.display = text.includes(value) ? "grid" : "none";
   });
 });
+
+
+
+function downloadTotalVendidoTxt() {
+
+  var summary = document.getElementById('sales-summary').value;
+
+  if (!summary || summary.trim() === '') {
+    alert('No hay datos para descargar.');
+    return;
+  }
+
+  var fecha = new Date();
+
+  var nombreArchivo =
+    'total_vendido_' +
+    fecha.getFullYear() + '-' +
+    String(fecha.getMonth() + 1).padStart(2, '0') + '-' +
+    String(fecha.getDate()).padStart(2, '0') + '_' +
+    String(fecha.getHours()).padStart(2, '0') + '-' +
+    String(fecha.getMinutes()).padStart(2, '0') +
+    '.txt';
+
+  var blob = new Blob([summary], {
+    type: 'text/plain'
+  });
+
+  var link = document.createElement('a');
+
+  link.href = URL.createObjectURL(blob);
+  link.download = nombreArchivo;
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 document.getElementById('search-code').addEventListener('input', function() {
   var value = this.value.trim().toLowerCase();
   searchProductLive(value);
